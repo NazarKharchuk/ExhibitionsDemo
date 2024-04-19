@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { Icon, IconButton, Menu, MenuItem, styled, Toolbar, Typography } from '@mui/material';
+import { Icon, IconButton, Menu, MenuItem, styled, Toolbar, Typography, LinearProgress } from '@mui/material';
 import MuiAppBar from '@mui/material/AppBar';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { userLogout } from '../../Store/userSlice';
 import { RemoveAccessToken } from '../../Helper/TokenFunctions';
 import { instance } from '../../API/api';
+import CustomAlert from '../UI/CustomAlert';
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'openDrawer' && prop !== 'drawerWidth',
@@ -27,6 +28,9 @@ const AppBar = styled(MuiAppBar, {
 const HeaderBar = (props) => {
     const [menuAnchor, setMenuAnchor] = React.useState(null);
     const isAuth = useSelector((store) => store.user.isAuth);
+    const email = useSelector((store) => store.user.email);
+    const title = useSelector((store) => store.header.title);
+    const isLoading = useSelector((store) => store.header.isLoading);
 
     const dispatch = useDispatch();
 
@@ -51,11 +55,11 @@ const HeaderBar = (props) => {
             {isAuth ? (
                 <MenuItem onClick={() => {
                     handleMenuClose();
-                    dispatch(userLogout);
+                    dispatch(userLogout());
                     RemoveAccessToken();
                     delete instance.defaults.headers.common["Authorization"];
                 }
-                } component={Link} to="/login">
+                } component={Link} to="/home">
                     Вийти
                 </MenuItem>
             ) : (
@@ -78,7 +82,10 @@ const HeaderBar = (props) => {
                     <Icon>menu</Icon>
                 </IconButton>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                    Exhibition
+                    {title}
+                </Typography>
+                <Typography variant="body1">
+                    {email}
                 </Typography>
                 <IconButton
                     aria-controls="account-menu"
@@ -90,6 +97,8 @@ const HeaderBar = (props) => {
                 </IconButton>
             </Toolbar>
             {renderMenu}
+            {isLoading && <LinearProgress color="secondary" />}
+            <CustomAlert />
         </AppBar>
     );
 }

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { styled, Box, CssBaseline } from '@mui/material';
-import HeaderBar from "../HederBar/HeaderBar";
+import HeaderBar from "../HeaderBar/HeaderBar";
 import Navigation, { DrawerHeader } from "../Navigation/Navigation";
 
 const drawerWidth = 250;

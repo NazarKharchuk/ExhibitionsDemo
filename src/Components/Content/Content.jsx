@@ -1,12 +1,20 @@
-import s from "./Content.module.css";
+import { Container } from "@mui/material";
 import * as React from 'react';
+import { Navigate, Route, Routes } from "react-router-dom";
+import Home from '../Pages/Home/Home'
+import Register from "../Pages/Auth/Register";
+import Login from "../Pages/Auth/Login";
 
 const Content = () => {
     return (
-        <div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam ex quibusdam iste explicabofacilis assumehitecto<br />
-            aperiam praesentium, fugit sapiente repudiandae, nihil porro sequi minima accusamus rerum corrupti doloribus odio.
-        </div>
+        <Container>
+            <Routes>
+                <Route path="/home" element={<Home />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="*" element={<Navigate to="/home" replace />} />
+            </Routes>
+        </Container>
     );
 }
 
