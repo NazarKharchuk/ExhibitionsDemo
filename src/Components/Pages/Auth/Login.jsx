@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { userLogin } from '../../../Store/userSlice';
 import { setLoading, setTitle, showAlert } from '../../../Store/headerSlice';
-import { SetAccessToken } from '../../../Helper/TokenFunctions';
+import { SetAccessToken, SetRefreshToken } from '../../../Helper/TokenFunctions';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -31,6 +31,7 @@ const Login = () => {
                 dispatch(showAlert({ message: "Вхід успішно виконано", severity: 'success', hideTime: 4000 }));
                 dispatch(userLogin(res.data.data));
                 SetAccessToken(res.data.data.accessToken)
+                SetRefreshToken(res.data.data.refreshToken);
                 instance.defaults.headers.common[
                     "Authorization"
                 ] = `Bearer ${res.data.data.accessToken}`;
