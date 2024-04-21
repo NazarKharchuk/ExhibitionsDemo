@@ -6,6 +6,7 @@ import Register from "../Pages/Auth/Register";
 import Login from "../Pages/Auth/Login";
 import Genre from "../Pages/Genre/Genre";
 import Style from "../Pages/Style/Style";
+import Material from "../Pages/Material/Material";
 
 const Content = () => {
     return (
@@ -16,6 +17,7 @@ const Content = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/genres" element={<Genre />} />
                 <Route path="/styles" element={<Style />} />
+                <Route path="/materials" element={<Material />} />
                 <Route path="*" element={<Navigate to="/home" replace />} />
             </Routes>
         </Container>

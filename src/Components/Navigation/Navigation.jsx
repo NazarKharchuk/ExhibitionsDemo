@@ -21,7 +21,7 @@ const secondDrawerItems = [
     { name: "Теги", iconName: "local_offer", link: "/tags" },
     { name: "Жанри", iconName: "category", link: "/genres" },
     { name: "Стилі", iconName: "category", link: "/styles" },
-
+    { name: "Матеріали", iconName: "category", link: "/materials" },
 ];
 
 const Navigation = (props) => {

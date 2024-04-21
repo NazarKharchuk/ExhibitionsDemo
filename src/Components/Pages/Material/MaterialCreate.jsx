@@ -1,13 +1,13 @@
 import * as React from 'react';
 import FullScreenDialog from '../../UI/FullScreenDialog';
 import { Container } from '@mui/material';
-import { genreAPI } from '../../../API/genreAPI';
+import { materialAPI } from '../../../API/materialAPI';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { showAlert } from '../../../Store/headerSlice';
-import GenreForm from './GenreForm';
+import MaterialForm from './MaterialForm';
 
-const GenreUpdate = ({ isUpdateDialogOpen, setIsUpdateDialogOpen, defaultValues, setNeedRefetch }) => {
+const MaterialCreate = ({ isCreateDialogOpen, setIsCreateDialogOpen, defaultValues, setNeedRefetch }) => {
     const dispatch = useDispatch();
 
     const { control, handleSubmit, formState: { isSubmitting, isDirty, isValid } } = useForm({
@@ -15,47 +15,47 @@ const GenreUpdate = ({ isUpdateDialogOpen, setIsUpdateDialogOpen, defaultValues,
     });
 
     const fieldsSettings = {
-        genreId: {
-            defaultValue: defaultValues.genreId,
+        materialId: {
+            defaultValue: defaultValues.materialId,
             disabled: true
         },
-        genreName: {
-            defaultValue: defaultValues.genreName,
+        materialName: {
+            defaultValue: defaultValues.materialName,
             disabled: false
         }
     }
 
     const handleClick = async (data) => {
         try {
-            const res = await genreAPI.updateGenre(data.genreId, data);
+            const res = await materialAPI.createMaterial(data);
 
             if (res.successfully === true) {
-                dispatch(showAlert({ message: "Зміни успішно збережено", severity: 'success', hideTime: 4000 }));
-                setIsUpdateDialogOpen(false);
+                dispatch(showAlert({ message: "Матеріал додано", severity: 'success', hideTime: 4000 }));
+                setIsCreateDialogOpen(false);
                 setNeedRefetch(Date.now());
             } else {
                 dispatch(showAlert({ message: res.message, severity: 'error', hideTime: 6000 }));
             }
         } catch (error) {
-            console.error("Помилка під час редагування жанру:", error);
+            console.error("Помилка під час додавання матеріалу:", error);
         }
     };
 
     return (
         <FullScreenDialog
-            isDialogOpen={isUpdateDialogOpen}
-            setIsDialogOpen={setIsUpdateDialogOpen}
-            dialogTitle="Редагування інформації про жанр"
-            buttonName="Зберегти"
+            isDialogOpen={isCreateDialogOpen}
+            setIsDialogOpen={setIsCreateDialogOpen}
+            dialogTitle="Додавання матеріалу"
+            buttonName="Додати"
             handleClick={handleSubmit(handleClick)}
             disabled={isSubmitting || !isDirty || !isValid}
             isSubmitting={isSubmitting}
         >
             <Container>
-                <GenreForm control={control} fieldsSettings={fieldsSettings} />
+                <MaterialForm control={control} fieldsSettings={fieldsSettings} />
             </Container>
         </FullScreenDialog>
     );
 }
 
-export default GenreUpdate;
+export default MaterialCreate;
