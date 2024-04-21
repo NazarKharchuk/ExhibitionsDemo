@@ -23,7 +23,6 @@ export const headerSlice = createSlice({
         },
         showAlert: (state, action) => {
             const { message, severity, hideTime } = action.payload;
-            console.log(message, severity, hideTime);
             state.alert.message = message;
             state.alert.severity = severity;
             state.alert.hideTime = hideTime;

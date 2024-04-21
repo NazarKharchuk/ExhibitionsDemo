@@ -11,13 +11,16 @@ export const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 const firstDrawerItems = [
-    { name: "Exhibitions", iconName: "collections", link: "/exhibitions" },
-    { name: "Contests", iconName: "poll", link: "/contests" },
+    { name: "Виставки", iconName: "collections", link: "/exhibitions" },
+    { name: "Конкурси", iconName: "poll", link: "/contests" },
 ];
 
 const secondDrawerItems = [
-    { name: "Painters", iconName: "groups", link: "/painters" },
-    { name: "Paintings", iconName: "image", link: "/paintings" },
+    { name: "Художники", iconName: "groups", link: "/painters" },
+    { name: "Картини", iconName: "image", link: "/paintings" },
+    { name: "Теги", iconName: "local_offer", link: "/tags" },
+    { name: "Жанри", iconName: "category", link: "/genres" },
+
 ];
 
 const Navigation = (props) => {
