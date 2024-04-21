@@ -2,20 +2,20 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setLoading, setTitle, showAlert } from '../../../Store/headerSlice';
-import { genreAPI } from '../../../API/genreAPI';
-import GenreUpdate from './GenreUpdate';
-import GenreCreate from './GenreCreate';
+import { styleAPI } from '../../../API/styleAPI';
+import StyleUpdate from './StyleUpdate';
+import StyleCreate from './StyleCreate';
 import FullTable from '../../UI/FullTable';
 
 const columns = [
     {
-        id: "genreId",
-        label: "Id жанру",
+        id: "styleId",
+        label: "Id стилю",
         minWidth: 200,
     },
     {
-        id: "genreName",
-        label: "Ім'я жанру",
+        id: "styleName",
+        label: "Ім'я стилю",
         minWidth: 300,
     },
     {
@@ -24,7 +24,7 @@ const columns = [
     },
 ];
 
-const Genre = () => {
+const Style = () => {
     const dispatch = useDispatch();
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -32,11 +32,11 @@ const Genre = () => {
     const [totalCount, setTotalCount] = useState(0);
     const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-    const [selectedGenre, setSelectedGenre] = useState({ genreId: '', genreName: '' });
+    const [selectedStyle, setSelectedStyle] = useState({ styleId: '', styleName: '' });
     const [needRefetch, setNeedRefetch] = useState(Date.now());
 
     useEffect(() => {
-        dispatch(setTitle({ title: "Жанри картин" }));
+        dispatch(setTitle({ title: "Стилі картин" }));
     }, []);
 
     useEffect(() => {
@@ -54,7 +54,7 @@ const Genre = () => {
 
     const fetchData = async () => {
         dispatch(setLoading({ isLoading: true }));
-        const result = await genreAPI.genres(page + 1, rowsPerPage);
+        const result = await styleAPI.styles(page + 1, rowsPerPage);
         if (result.successfully === true) {
             setData(result.data.pageContent);
             setTotalCount(result.data.totalCount);
@@ -65,51 +65,51 @@ const Genre = () => {
         }
     };
 
-    const handleEdit = (genre) => {
-        setSelectedGenre(genre);
+    const handleEdit = (style) => {
+        setSelectedStyle(style);
         setIsUpdateDialogOpen(true);
     };
 
-    const handleDelete = (genreId) => {
-        const deleteGenre = async (genreId) => {
+    const handleDelete = (styleId) => {
+        const deleteStyle = async (styleId) => {
             try {
                 dispatch(setLoading({ isLoading: true }));
-                const res = await genreAPI.deleteGenre(genreId);
+                const res = await styleAPI.deleteStyle(styleId);
 
                 if (res.successfully === true) {
-                    dispatch(showAlert({ message: "Жанр успішно видалено", severity: 'success', hideTime: 4000 }));
+                    dispatch(showAlert({ message: "Стиль успішно видалено", severity: 'success', hideTime: 4000 }));
                     setNeedRefetch(Date.now());
                 } else {
                     dispatch(showAlert({ message: res.message, severity: 'error', hideTime: 6000 }));
                 }
             } catch (error) {
-                console.error("Помилка під час видалення жанру:", error);
+                console.error("Помилка під час видалення стилю:", error);
             }
             dispatch(setLoading({ isLoading: false }));
         }
-        deleteGenre(genreId);
+        deleteStyle(styleId);
     };
 
     const handleAdd = () => {
-        setSelectedGenre({ genreId: '', genreName: '' });
+        setSelectedStyle({ styleId: '', styleName: '' });
         setIsCreateDialogOpen(true);
     };
 
     return (
         <>
-            <FullTable tableTitle="Таблиця жанрів" addButtonName="Додати жанр" handleAdd={handleAdd} columns={columns} data={data}
-                rowId="genreId" totalCount={totalCount} handleEdit={handleEdit} handleDelete={handleDelete} rowsPerPage={rowsPerPage}
+            <FullTable tableTitle="Таблиця стилів" addButtonName="Додати стиль" handleAdd={handleAdd} columns={columns} data={data}
+                rowId="styleId" totalCount={totalCount} handleEdit={handleEdit} handleDelete={handleDelete} rowsPerPage={rowsPerPage}
                 page={page} handleChangePage={handleChangePage} handleChangeRowsPerPage={handleChangeRowsPerPage} />
             {isUpdateDialogOpen &&
-                <GenreUpdate isUpdateDialogOpen={isUpdateDialogOpen} setIsUpdateDialogOpen={setIsUpdateDialogOpen}
-                    defaultValues={selectedGenre} setNeedRefetch={setNeedRefetch} />
+                <StyleUpdate isUpdateDialogOpen={isUpdateDialogOpen} setIsUpdateDialogOpen={setIsUpdateDialogOpen}
+                    defaultValues={selectedStyle} setNeedRefetch={setNeedRefetch} />
             }
             {isCreateDialogOpen &&
-                <GenreCreate isCreateDialogOpen={isCreateDialogOpen} setIsCreateDialogOpen={setIsCreateDialogOpen}
-                    defaultValues={selectedGenre} setNeedRefetch={setNeedRefetch} />
+                <StyleCreate isCreateDialogOpen={isCreateDialogOpen} setIsCreateDialogOpen={setIsCreateDialogOpen}
+                    defaultValues={selectedStyle} setNeedRefetch={setNeedRefetch} />
             }
         </>
     );
 }
 
-export default Genre;
+export default Style;

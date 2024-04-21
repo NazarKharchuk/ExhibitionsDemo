@@ -20,6 +20,7 @@ const secondDrawerItems = [
     { name: "Картини", iconName: "image", link: "/paintings" },
     { name: "Теги", iconName: "local_offer", link: "/tags" },
     { name: "Жанри", iconName: "category", link: "/genres" },
+    { name: "Стилі", iconName: "category", link: "/styles" },
 
 ];
 
