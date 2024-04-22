@@ -7,6 +7,8 @@ import Login from "../Pages/Auth/Login";
 import Genre from "../Pages/Genre/Genre";
 import Style from "../Pages/Style/Style";
 import Material from "../Pages/Material/Material";
+import PainterList from "../Pages/Painter/PainterList";
+import Painter from "../Pages/Painter/Painter";
 
 const Content = () => {
     return (
@@ -18,6 +20,8 @@ const Content = () => {
                 <Route path="/genres" element={<Genre />} />
                 <Route path="/styles" element={<Style />} />
                 <Route path="/materials" element={<Material />} />
+                <Route path="/painters" element={<PainterList />} />
+                <Route path="/painters/:painterId" element={<Painter />} />
                 <Route path="*" element={<Navigate to="/home" replace />} />
             </Routes>
         </Container>
