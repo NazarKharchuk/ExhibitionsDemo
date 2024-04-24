@@ -61,7 +61,7 @@ const Material = () => {
             dispatch(setLoading({ isLoading: false }));
         } else {
             dispatch(setLoading({ isLoading: false }));
-            dispatch(showAlert({ message: "Не вдалось отримати дані", severity: 'error', hideTime: 10000 }));
+            dispatch(showAlert({ message: "Не вдалось отримати дані: " + result.message, severity: 'error', hideTime: 10000 }));
         }
     };
 
@@ -78,6 +78,7 @@ const Material = () => {
 
                 if (res.successfully === true) {
                     dispatch(showAlert({ message: "Матеріал успішно видалено", severity: 'success', hideTime: 4000 }));
+                    setPage(0);
                     setNeedRefetch(Date.now());
                 } else {
                     dispatch(showAlert({ message: res.message, severity: 'error', hideTime: 6000 }));
