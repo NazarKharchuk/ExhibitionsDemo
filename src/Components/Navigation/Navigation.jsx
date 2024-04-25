@@ -18,6 +18,7 @@ const firstDrawerItems = [
 const secondDrawerItems = [
     { name: "Художники", iconName: "groups", link: "/painters" },
     { name: "Картини", iconName: "image", link: "/paintings" },
+    { name: "Профілі", iconName: "people", link: "/profiles" },
     { name: "Теги", iconName: "local_offer", link: "/tags" },
     { name: "Жанри", iconName: "category", link: "/genres" },
     { name: "Стилі", iconName: "category", link: "/styles" },

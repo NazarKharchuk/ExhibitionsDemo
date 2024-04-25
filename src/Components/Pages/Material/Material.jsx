@@ -18,10 +18,6 @@ const columns = [
         label: "Ім'я матеріалу",
         minWidth: 300,
     },
-    {
-        id: "actions",
-        label: "Дії",
-    },
 ];
 
 const Material = () => {

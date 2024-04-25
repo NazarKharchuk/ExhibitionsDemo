@@ -18,10 +18,6 @@ const columns = [
         label: "Ім'я стилю",
         minWidth: 300,
     },
-    {
-        id: "actions",
-        label: "Дії",
-    },
 ];
 
 const Style = () => {

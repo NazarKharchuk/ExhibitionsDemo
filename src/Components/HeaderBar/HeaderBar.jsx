@@ -4,7 +4,7 @@ import MuiAppBar from '@mui/material/AppBar';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { userLogout } from '../../Store/userSlice';
-import { RemoveAccessToken } from '../../Helper/TokenFunctions';
+import { RemoveAccessToken, RemoveRefreshToken } from '../../Helper/TokenFunctions';
 import { instance } from '../../API/api';
 import CustomAlert from '../UI/CustomAlert';
 
@@ -57,6 +57,7 @@ const HeaderBar = (props) => {
                     handleMenuClose();
                     dispatch(userLogout());
                     RemoveAccessToken();
+                    RemoveRefreshToken();
                     delete instance.defaults.headers.common["Authorization"];
                 }
                 } component={Link} to="/home">

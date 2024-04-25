@@ -1,21 +1,23 @@
 import * as React from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, IconButton, TablePagination, Typography } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TablePagination, Typography, IconButton } from '@mui/material';
 import Icon from '@mui/material/Icon';
 
-const FullTable = ({ tableTitle, addButtonName, handleAdd, columns, data, rowId, handleEdit, handleDelete,
-    totalCount, rowsPerPage, page, handleChangePage, handleChangeRowsPerPage }) => {
+const FullTable = ({ tableTitle, addButtonName, handleAdd, columns, data, rowId, totalCount, rowsPerPage, page,
+    handleEdit, handleDelete, handleChangePage, handleChangeRowsPerPage, additionalCols, children }) => {
     return (
         <Paper elevation={3} sx={{ width: "100%", overflow: "hidden" }}>
             <TableContainer sx={{ maxHeight: 530 }}>
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-                            <TableCell colSpan={4}>
+                            <TableCell colSpan={10}>
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                     <Typography variant="h4">{tableTitle}</Typography>
-                                    <Button variant="contained" color="primary" onClick={handleAdd} startIcon={<Icon>add</Icon>}>
-                                        {addButtonName}
-                                    </Button>
+                                    {addButtonName &&
+                                        <Button variant="contained" color="primary" onClick={handleAdd} startIcon={<Icon>add</Icon>}>
+                                            {addButtonName}
+                                        </Button>
+                                    }
                                 </div>
                             </TableCell>
                         </TableRow>
@@ -25,6 +27,13 @@ const FullTable = ({ tableTitle, addButtonName, handleAdd, columns, data, rowId,
                                     {column.label}
                                 </TableCell>
                             ))}
+                            {additionalCols !== undefined ? (
+                                additionalCols
+                            ) : (
+                                <TableCell key="actions" style={{ top: 60 }}>
+                                    Дії
+                                </TableCell>
+                            )}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -34,21 +43,24 @@ const FullTable = ({ tableTitle, addButtonName, handleAdd, columns, data, rowId,
                                     const value = row[column.id];
                                     return (
                                         <TableCell key={column.id}>
-                                            {column.id === 'actions' ? (
-                                                <>
-                                                    <IconButton onClick={() => handleEdit(row)} aria-label="edit">
-                                                        <Icon>edit</Icon>
-                                                    </IconButton>
-                                                    <IconButton onClick={() => handleDelete(row[rowId])} aria-label="delete">
-                                                        <Icon>delete</Icon>
-                                                    </IconButton>
-                                                </>
-                                            ) : (
-                                                value
-                                            )}
+                                            {column.format
+                                                ? column.format(value)
+                                                : value}
                                         </TableCell>
                                     );
                                 })}
+                                {children !== undefined ? (
+                                    children(row, rowId)
+                                ) : (
+                                    <TableCell key="actions">
+                                        <IconButton onClick={() => handleEdit(row)} aria-label="edit">
+                                            <Icon>edit</Icon>
+                                        </IconButton>
+                                        <IconButton onClick={() => handleDelete(row[rowId])} aria-label="delete">
+                                            <Icon>delete</Icon>
+                                        </IconButton>
+                                    </TableCell>
+                                )}
                             </TableRow>
                         ))}
                     </TableBody>

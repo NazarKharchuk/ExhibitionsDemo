@@ -18,10 +18,6 @@ const columns = [
         label: "Ім'я жанру",
         minWidth: 300,
     },
-    {
-        id: "actions",
-        label: "Дії",
-    },
 ];
 
 const Genre = () => {

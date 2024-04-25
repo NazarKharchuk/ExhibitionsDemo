@@ -1,7 +1,7 @@
 import { instance } from "../API/api";
 import { store } from "../Store/store";
 import { userLogin } from "../Store/userSlice";
-import { GetAccessToken, GetRefreshToken, SetAccessToken, SetRefreshToken } from "./TokenFunctions";
+import { GetAccessToken, GetRefreshToken, RemoveRefreshToken, SetAccessToken, SetRefreshToken } from "./TokenFunctions";
 
 export const RefreshTokens = async () => {
     try {
@@ -11,6 +11,7 @@ export const RefreshTokens = async () => {
             console.log("Токени успішно оновлено");
             store.dispatch(userLogin(res.data.data));
             SetAccessToken(res.data.data.accessToken);
+            RemoveRefreshToken();
             SetRefreshToken(res.data.data.refreshToken);
             instance.defaults.headers.common[
                 "Authorization"
