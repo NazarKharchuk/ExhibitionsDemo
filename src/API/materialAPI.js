@@ -6,6 +6,10 @@ export const materialAPI = {
         const res = await instance.get(`materials`, { params: params });
         return res.data;
     },
+    async allMaterials() {
+        const res = await instance.get(`all-materials`);
+        return res.data;
+    },
     async material(id) {
         const res = await instance.get(`materials/` + id);
         return res.data;

@@ -6,6 +6,10 @@ export const genreAPI = {
         const res = await instance.get(`genres`, { params: params });
         return res.data;
     },
+    async allGenres() {
+        const res = await instance.get(`all-genres`);
+        return res.data;
+    },
     async genre(id) {
         const res = await instance.get(`genres/` + id);
         return res.data;

@@ -24,8 +24,12 @@ const FullScreenDialog = ({ children, isDialogOpen, setIsDialogOpen, dialogTitle
                         {!isSubmitting ? buttonName : <CircularProgress size={25} />}
                     </Button>
                 </Toolbar>
+                {isSubmitting &&
+                    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 9999 }}>
+                        <LinearProgress color="secondary" />
+                    </div>
+                }
             </AppBar>
-            {isSubmitting && <LinearProgress color="secondary" />}
             <DialogContent>
                 {children}
             </DialogContent>

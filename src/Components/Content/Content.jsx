@@ -10,6 +10,7 @@ import Material from "../Pages/Material/Material";
 import PainterList from "../Pages/Painter/PainterList";
 import Painter from "../Pages/Painter/Painter";
 import ProfileList from "../Pages/Profiles/ProfileList";
+import PaintingList from "../Pages/Painting/PaintingList";
 
 const Content = () => {
     return (
@@ -24,6 +25,7 @@ const Content = () => {
                 <Route path="/painters" element={<PainterList />} />
                 <Route path="/painters/:painterId" element={<Painter />} />
                 <Route path="/profiles" element={<ProfileList />} />
+                <Route path="/paintings" element={<PaintingList />} />
                 <Route path="*" element={<Navigate to="/home" replace />} />
             </Routes>
         </Container>

@@ -4,15 +4,16 @@ import { red, yellow, amber } from '@mui/material/colors';
 import { getColorFromSentence } from "../../../Helper/ColorFunctions"
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setLoading, showAlert } from '../../../Store/headerSlice';
 import { painterAPI } from '../../../API/painterAPI';
 import { RefreshTokens } from '../../../Helper/RefreshTokens';
 
 const PainterCard = (props) => {
-    const { painterId, pseudonym, firstName, lastName, likesCount, victoriesCount, ratingCount, avgRating, myPainterId } = props.painter;
+    const { painterId, pseudonym, firstName, lastName, likesCount, victoriesCount, ratingCount, avgRating } = props.painter;
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const myPainterId = useSelector((store) => store.user.painterId);
 
     const handleViewProfile = () => {
         navigate("/painters/" + painterId, { replace: true });

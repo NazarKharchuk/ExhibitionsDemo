@@ -6,6 +6,10 @@ export const styleAPI = {
         const res = await instance.get(`styles`, { params: params });
         return res.data;
     },
+    async allStyles() {
+        const res = await instance.get(`all-styles`);
+        return res.data;
+    },
     async style(id) {
         const res = await instance.get(`styles/` + id);
         return res.data;
