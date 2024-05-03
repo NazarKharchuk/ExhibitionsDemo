@@ -1,7 +1,7 @@
 import { instance } from "../API/api";
 import { store } from "../Store/store";
 import { userLogin } from "../Store/userSlice";
-import { GetAccessToken, GetRefreshToken, RemoveRefreshToken, SetAccessToken, SetRefreshToken } from "./TokenFunctions";
+import { GetAccessToken, GetRefreshToken, RemoveAccessToken, RemoveRefreshToken, SetAccessToken, SetRefreshToken } from "./TokenFunctions";
 
 export const RefreshTokens = async () => {
     try {
@@ -10,12 +10,14 @@ export const RefreshTokens = async () => {
         if (res.data.successfully === true) {
             console.log("Токени успішно оновлено");
             store.dispatch(userLogin(res.data.data));
+            RemoveAccessToken();
             SetAccessToken(res.data.data.accessToken);
             RemoveRefreshToken();
             SetRefreshToken(res.data.data.refreshToken);
             instance.defaults.headers.common[
                 "Authorization"
             ] = `Bearer ${res.data.data.accessToken}`;
+            window.location.reload();
         } else {
             console.log("Токени не оновлено:", res.data.message);
         }

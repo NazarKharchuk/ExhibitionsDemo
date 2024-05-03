@@ -210,9 +210,9 @@ const PaintingCreateUpdate = ({ isCreateUpdateDialogOpen, setIsCreateUpdateDialo
 
     const renderSteps = () => {
         switch (activeStep) {
-            case 0: {
+            /*case 0: {
                 return renderAddUpdateStep;
-            }
+            }*/
             case 1: {
                 return renderGenreStep;
             }
@@ -242,42 +242,42 @@ const PaintingCreateUpdate = ({ isCreateUpdateDialogOpen, setIsCreateUpdateDialo
     };
 
     const renderAddUpdateStep = (
-        <>
+        <div style={{ display: activeStep === 0 ? 'block' : 'none' }}>
             <PaintingForm control={control} fieldsSettings={fieldsSettings} />
             <StepButtons disabledBack={true} disabledSkip={selectedPainting !== null ? false : true} handleSkip={handleSkip}
                 nextButtonName={selectedPainting !== null ? "Змінити" : "Зберегти"} disabledNext={isSubmitting || !isDirty || !isValid}
                 handleNext={handleSubmit(selectedPainting !== null ? handleUpdate : handleCreate)} />
-        </>
+        </div>
     )
 
     const renderGenreStep = (
-        <StepContent singularName="Жанр" pluralName="Жанри" stepIndex={1} data={data} allOptions={genres} nameValuesInPaintingObj="genres"
-            selectedPainting={selectedPainting} valueName="genreName" valueId="genreId" setIsLoaded={setIsLoaded}
-            setCompletedSteps={setCompletedSteps} setNeedRefetchPainting={setNeedRefetchPainting} addMethod={paintingAPI.addGenre}
+        <StepContent singularName="Жанр" pluralName="Жанри" stepIndex={1} data={data} allOptions={genres} nameValuesInArrayObj="genres"
+            selectedObject={selectedPainting} valueName="genreName" valueId="genreId" setIsLoaded={setIsLoaded}
+            setCompletedSteps={setCompletedSteps} setNeedRefetchObject={setNeedRefetchPainting} addMethod={paintingAPI.addGenre}
             deleteMethod={paintingAPI.deleteGenre} disabledBack={false} handleBack={handleBack} disabledSkip={false}
             handleSkip={handleSkip} nextButtonName={"Далі"} disabledNext={false} handleNext={handleSkip} />
     );
 
     const renderStyleStep = (
-        <StepContent singularName="Стиль" pluralName="Стилі" stepIndex={2} data={data} allOptions={styles} nameValuesInPaintingObj="styles"
-            selectedPainting={selectedPainting} valueName="styleName" valueId="styleId" setIsLoaded={setIsLoaded}
-            setCompletedSteps={setCompletedSteps} setNeedRefetchPainting={setNeedRefetchPainting} addMethod={paintingAPI.addStyle}
+        <StepContent singularName="Стиль" pluralName="Стилі" stepIndex={2} data={data} allOptions={styles} nameValuesInArrayObj="styles"
+            selectedObject={selectedPainting} valueName="styleName" valueId="styleId" setIsLoaded={setIsLoaded}
+            setCompletedSteps={setCompletedSteps} setNeedRefetchObject={setNeedRefetchPainting} addMethod={paintingAPI.addStyle}
             deleteMethod={paintingAPI.deleteStyle} disabledBack={false} handleBack={handleBack} disabledSkip={false}
             handleSkip={handleSkip} nextButtonName={"Далі"} disabledNext={false} handleNext={handleSkip} />
     );
 
     const renderMaterialStep = (
-        <StepContent singularName="Матеріал" pluralName="Матеріали" stepIndex={3} data={data} allOptions={materials} nameValuesInPaintingObj="materials"
-            selectedPainting={selectedPainting} valueName="materialName" valueId="materialId" setIsLoaded={setIsLoaded}
-            setCompletedSteps={setCompletedSteps} setNeedRefetchPainting={setNeedRefetchPainting} addMethod={paintingAPI.addMaterial}
+        <StepContent singularName="Матеріал" pluralName="Матеріали" stepIndex={3} data={data} allOptions={materials} nameValuesInArrayObj="materials"
+            selectedObject={selectedPainting} valueName="materialName" valueId="materialId" setIsLoaded={setIsLoaded}
+            setCompletedSteps={setCompletedSteps} setNeedRefetchObject={setNeedRefetchPainting} addMethod={paintingAPI.addMaterial}
             deleteMethod={paintingAPI.deleteMaterial} disabledBack={false} handleBack={handleBack} disabledSkip={false}
             handleSkip={handleSkip} nextButtonName={"Далі"} disabledNext={false} handleNext={handleSkip} />
     );
 
     const renderTagStep = (
-        <StepContent singularName="Тег" pluralName="Теги" stepIndex={4} data={data} allOptions={tags} nameValuesInPaintingObj="tags"
-            selectedPainting={selectedPainting} valueName="tagName" valueId="tagId" setIsLoaded={setIsLoaded}
-            setCompletedSteps={setCompletedSteps} setNeedRefetchPainting={setNeedRefetchPainting} addMethod={paintingAPI.addTag}
+        <StepContent singularName="Тег" pluralName="Теги" stepIndex={4} data={data} allOptions={tags} nameValuesInArrayObj="tags"
+            selectedObject={selectedPainting} valueName="tagName" valueId="tagId" setIsLoaded={setIsLoaded}
+            setCompletedSteps={setCompletedSteps} setNeedRefetchObject={setNeedRefetchPainting} addMethod={paintingAPI.addTag}
             deleteMethod={paintingAPI.deleteTag} disabledBack={false} handleBack={handleBack} disabledSkip={true}
             handleSkip={handleSkip} nextButtonName={"Закінчити"} disabledNext={false} handleNext={handleClose} />
     );
@@ -300,6 +300,7 @@ const PaintingCreateUpdate = ({ isCreateUpdateDialogOpen, setIsCreateUpdateDialo
                 ))}
             </Stepper>
             <Box sx={{ paddingTop: 2 }}>
+                {renderAddUpdateStep}
                 {renderSteps()}
             </Box>
         </FullScreenDialog>

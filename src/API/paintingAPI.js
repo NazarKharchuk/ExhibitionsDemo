@@ -1,8 +1,8 @@
 import { instance } from "./api";
 
 export const paintingAPI = {
-    async paintings(PageNumber = 1, PageSize = 12) {
-        const params = { PageNumber: PageNumber, PageSize: PageSize };
+    async paintings(PageNumber = 1, PageSize = 12, painterId) {
+        const params = { PageNumber: PageNumber, PageSize: PageSize, painterId: painterId !== undefined ? painterId : null };
         const res = await instance.get(`paintings`, { params: params });
         return res.data;
     },
