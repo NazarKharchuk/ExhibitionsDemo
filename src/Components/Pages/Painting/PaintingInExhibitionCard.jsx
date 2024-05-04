@@ -1,16 +1,16 @@
-import { IconButton, Button, MenuItem, Box, Typography } from '@mui/material';
+import { IconButton, Button, MenuItem } from '@mui/material';
 import { Icon } from '@mui/material';
-import { amber, red, } from '@mui/material/colors';
+import { red } from '@mui/material/colors';
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoading, showAlert } from '../../../Store/headerSlice';
 import { paintingAPI } from '../../../API/paintingAPI';
 import PaintingCardTemplate from './PaintingCardTemplate';
-import { contestApplicationAPI } from '../../../API/contestApplicationAPI';
+import { exhibitionApplicationAPI } from '../../../API/exhibitionApplicationAPI';
 
-const PaintingInContestCard = (props) => {
-    const { applicationId, votesCount, isWon, painting } = props.application;
+const PaintingInExhibitionCard = (props) => {
+    const { applicationId, painting } = props.application;
     const { paintingId, isLiked } = painting;
 
     const navigate = useNavigate();
@@ -36,7 +36,7 @@ const PaintingInContestCard = (props) => {
         const confirmApplication = async (applicationId) => {
             try {
                 dispatch(setLoading({ isLoading: true }));
-                const res = await contestApplicationAPI.confirmContestApplication(applicationId);
+                const res = await exhibitionApplicationAPI.confirmExhibitionApplication(applicationId);
 
                 if (res.successfully === true) {
                     dispatch(showAlert({ message: "Заявку успішно підтверджено", severity: 'success', hideTime: 4000 }));
@@ -57,7 +57,7 @@ const PaintingInContestCard = (props) => {
         const deleteApplication = async (applicationId) => {
             try {
                 dispatch(setLoading({ isLoading: true }));
-                const res = await contestApplicationAPI.deleteContestApplication(applicationId);
+                const res = await exhibitionApplicationAPI.deleteExhibitionApplication(applicationId);
 
                 if (res.successfully === true) {
                     dispatch(showAlert({ message: "Заявку успішно видалено", severity: 'success', hideTime: 4000 }));
@@ -115,50 +115,6 @@ const PaintingInContestCard = (props) => {
         }
     };
 
-    const handleVoteClick = async () => {
-        const addVote = async (applicationId) => {
-            try {
-                dispatch(setLoading({ isLoading: true }));
-                const res = await contestApplicationAPI.addVote(applicationId);
-
-                if (res.successfully === true) {
-                    dispatch(showAlert({ message: "Ви успішно віддали свій голос", severity: 'success', hideTime: 4000 }));
-                } else {
-                    dispatch(showAlert({ message: res.message, severity: 'error', hideTime: 6000 }));
-                }
-            } catch (error) {
-                console.error("Помилка під час голосування на заявку:", error);
-            }
-            dispatch(setLoading({ isLoading: false }));
-        }
-        if (myProfileId !== null) {
-            await addVote(applicationId);
-            props.setNeedRefetch(Date.now());
-        }
-    };
-
-    const handleUnvoteClick = async () => {
-        const addUnvote = async (applicationId) => {
-            try {
-                dispatch(setLoading({ isLoading: true }));
-                const res = await contestApplicationAPI.deleteVote(applicationId);
-
-                if (res.successfully === true) {
-                    dispatch(showAlert({ message: "Ви успішно скасували свій голос", severity: 'success', hideTime: 4000 }));
-                } else {
-                    dispatch(showAlert({ message: res.message, severity: 'error', hideTime: 6000 }));
-                }
-            } catch (error) {
-                console.error("Помилка під час скасування голосування за заявку:", error);
-            }
-            dispatch(setLoading({ isLoading: false }));
-        }
-        if (myProfileId !== null) {
-            await addUnvote(applicationId);
-            props.setNeedRefetch(Date.now());
-        }
-    };
-
     const menuProps = {
         menuAnchor: menuAnchor,
         handleMenuOpen: handleMenuOpen,
@@ -170,20 +126,6 @@ const PaintingInContestCard = (props) => {
 
     const middleButton = () => {
         switch (props.actionMode) {
-            case "vote": {
-                return (
-                    <Button onClick={handleVoteClick} startIcon={<Icon>how_to_vote</Icon>} disabled={props.disabledButton} >
-                        Проголосувати
-                    </Button>
-                )
-            }
-            case "unvote": {
-                return (
-                    <Button onClick={handleUnvoteClick} startIcon={<Icon color='red'>how_to_vote</Icon>} disabled={props.disabledButton}>
-                        Скасувати голос
-                    </Button>
-                )
-            }
             case "deleteApplication": {
                 return (
                     <Button onClick={handleDeleteApplication} startIcon={<Icon>delete</Icon>} >
@@ -213,23 +155,9 @@ const PaintingInContestCard = (props) => {
         </>
     );
 
-    const contentRest = [
-        <Box key="votesCount" sx={{ display: 'flex', alignItems: 'center' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 2 }}>
-                <Icon sx={{ color: amber[500] }}>how_to_vote</Icon>
-                <Typography variant="body2" color="text.secondary" sx={{ marginLeft: 1 }}>
-                    Кількість голосів:
-                </Typography>
-            </Box>
-            <Typography variant="body1" color="primary">
-                {votesCount}
-            </Typography>
-        </Box>,
-    ];
-
     return (
-        <PaintingCardTemplate painting={painting} menu={menuProps} cardActions={cardActions} contentRest={contentRest} isWon={isWon} />
+        <PaintingCardTemplate painting={painting} menu={menuProps} cardActions={cardActions} />
     );
 }
 
-export default PaintingInContestCard;
+export default PaintingInExhibitionCard;

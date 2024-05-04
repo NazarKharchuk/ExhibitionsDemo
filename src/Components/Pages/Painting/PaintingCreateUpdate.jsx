@@ -200,6 +200,7 @@ const PaintingCreateUpdate = ({ isCreateUpdateDialogOpen, setIsCreateUpdateDialo
                 dispatch(showAlert({ message: "Картину успішно змінено", severity: 'success', hideTime: 4000 }));
                 setCompletedSteps((prev) => [...prev, 0]);
                 handleSkip();
+                setNeedRefetchPainting(new Date());
             } else {
                 dispatch(showAlert({ message: res.message, severity: 'error', hideTime: 6000 }));
             }

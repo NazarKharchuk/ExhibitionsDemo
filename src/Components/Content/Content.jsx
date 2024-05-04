@@ -14,6 +14,8 @@ import Painting from "../Pages/Painting/Painting";
 import PaintingList from "../Pages/Painting/PaintingList";
 import Contest from "../Pages/Contest/Contest";
 import ContestList from "../Pages/Contest/ContestList";
+import Exhibition from "../Pages/Exhibition/Exhibition";
+import ExhibitionList from "../Pages/Exhibition/ExhibitionList";
 
 const Content = () => {
     return (
@@ -32,6 +34,8 @@ const Content = () => {
                 <Route path="/paintings" element={<PaintingList />} />
                 <Route path="/contests/:contestId" element={<Contest />} />
                 <Route path="/contests" element={<ContestList />} />
+                <Route path="/exhibitions/:exhibitionId" element={<Exhibition />} />
+                <Route path="/exhibitions" element={<ExhibitionList />} />
                 <Route path="*" element={<Navigate to="/home" replace />} />
             </Routes>
         </Container>

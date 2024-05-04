@@ -8,8 +8,8 @@ import TabPanel from '../../UI/TabPanel';
 import { getColorFromSentence } from '../../../Helper/ColorFunctions';
 import { amber, blue, green, purple, red, teal, yellow } from '@mui/material/colors';
 import ContestCreateUpdate from './ContestCreateUpdate';
-import PaintingInContestCard from '../Painting/PaintingInContestCard';
 import ApplicationCreate from './ApplicationCreate';
+import PaintingInContestCard from '../Painting/PaintingInContestCard';
 
 const Contest = () => {
     const dispatch = useDispatch();
@@ -111,7 +111,7 @@ const Contest = () => {
 
     const fetchSubmissions = async () => {
         dispatch(setLoading({ isLoading: true }));
-        const result = await contestAPI.contestSubmissions(params.contestId, pageVotes, votesPerPage);
+        const result = await contestAPI.contestSubmissions(params.contestId, pageSubmissions, submissionsPerPage);
         if (result.successfully === true) {
             setSubmissions(result.data.pageContent);
             setTotalSubmissionsCount(result.data.totalCount);
@@ -124,7 +124,7 @@ const Contest = () => {
 
     const fetchNotConfirmeds = async () => {
         dispatch(setLoading({ isLoading: true }));
-        const result = await contestAPI.contestNotConfirmeds(params.contestId, pageVotes, votesPerPage);
+        const result = await contestAPI.contestNotConfirmeds(params.contestId, pageNotConfirmeds, notConfirmedsPerPage);
         if (result.successfully === true) {
             setNotConfirmeds(result.data.pageContent);
             setTotalNotConfirmedsCount(result.data.totalCount);
@@ -362,7 +362,7 @@ const Contest = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 2 }}>
                     <Icon sx={{ color: purple[500] }}>description</Icon>
                     <Typography variant="body2" color="text.secondary" sx={{ marginLeft: 1 }}>
-                        Опис картини:
+                        Опис конкурсу:
                     </Typography>
                 </Box>
                 <Typography variant="body1" color="primary">

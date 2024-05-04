@@ -213,6 +213,7 @@ const ContestCreateUpdate = ({ isCreateUpdateDialogOpen, setIsCreateUpdateDialog
                 dispatch(showAlert({ message: "Конкурс успішно змінено", severity: 'success', hideTime: 4000 }));
                 setCompletedSteps((prev) => [...prev, 0]);
                 handleSkip();
+                setNeedRefetchContest(new Date());
             } else {
                 dispatch(showAlert({ message: res.message, severity: 'error', hideTime: 6000 }));
             }
