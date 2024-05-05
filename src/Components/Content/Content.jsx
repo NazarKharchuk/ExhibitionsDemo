@@ -7,6 +7,7 @@ import Login from "../Pages/Auth/Login";
 import Genre from "../Pages/Genre/Genre";
 import Style from "../Pages/Style/Style";
 import Material from "../Pages/Material/Material";
+import Tag from "../Pages/Tag/Tag";
 import PainterList from "../Pages/Painter/PainterList";
 import Painter from "../Pages/Painter/Painter";
 import ProfileList from "../Pages/Profiles/ProfileList";
@@ -27,6 +28,7 @@ const Content = () => {
                 <Route path="/genres" element={<Genre />} />
                 <Route path="/styles" element={<Style />} />
                 <Route path="/materials" element={<Material />} />
+                <Route path="/tags" element={<Tag />} />
                 <Route path="/painters" element={<PainterList />} />
                 <Route path="/painters/:painterId" element={<Painter />} />
                 <Route path="/profiles" element={<ProfileList />} />

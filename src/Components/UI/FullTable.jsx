@@ -1,9 +1,14 @@
 import * as React from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TablePagination, Typography, IconButton } from '@mui/material';
 import Icon from '@mui/material/Icon';
+import { useSelector } from 'react-redux';
 
 const FullTable = ({ tableTitle, addButtonName, handleAdd, columns, data, rowId, totalCount, rowsPerPage, page,
     handleEdit, handleDelete, handleChangePage, handleChangeRowsPerPage, additionalCols, children }) => {
+
+    const myRoles = useSelector((store) => store.user.roles);
+    const myIsAdmin = myRoles !== null ? myRoles.includes("Admin") : false;
+
     return (
         <Paper elevation={3} sx={{ width: "100%", overflow: "hidden" }}>
             <TableContainer sx={{ maxHeight: 530 }}>
@@ -13,7 +18,7 @@ const FullTable = ({ tableTitle, addButtonName, handleAdd, columns, data, rowId,
                             <TableCell colSpan={10}>
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                     <Typography variant="h4">{tableTitle}</Typography>
-                                    {addButtonName &&
+                                    {(addButtonName && myIsAdmin) &&
                                         <Button variant="contained" color="primary" onClick={handleAdd} startIcon={<Icon>add</Icon>}>
                                             {addButtonName}
                                         </Button>
@@ -30,6 +35,7 @@ const FullTable = ({ tableTitle, addButtonName, handleAdd, columns, data, rowId,
                             {additionalCols !== undefined ? (
                                 additionalCols
                             ) : (
+                                myIsAdmin &&
                                 <TableCell key="actions" style={{ top: 60 }}>
                                     Дії
                                 </TableCell>
@@ -52,6 +58,7 @@ const FullTable = ({ tableTitle, addButtonName, handleAdd, columns, data, rowId,
                                 {children !== undefined ? (
                                     children(row, rowId)
                                 ) : (
+                                    myIsAdmin &&
                                     <TableCell key="actions">
                                         <IconButton onClick={() => handleEdit(row)} aria-label="edit">
                                             <Icon>edit</Icon>
