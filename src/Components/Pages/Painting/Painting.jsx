@@ -3,12 +3,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setLoading, setTitle, showAlert } from '../../../Store/headerSlice';
 import { useNavigate, useParams } from 'react-router-dom';
 import { paintingAPI } from '../../../API/paintingAPI';
-import { Avatar, Box, Card, CardHeader, CardMedia, Chip, Icon, IconButton, LinearProgress, Menu, MenuItem, Rating, Tab, Tabs, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, Button, Card, CardHeader, CardMedia, Chip, CircularProgress, Grid, Icon, IconButton, LinearProgress, Menu, MenuItem, Pagination, Rating, Tab, Tabs, Typography } from '@mui/material';
 import TabPanel from '../../UI/TabPanel';
 import { getColorFromSentence } from '../../../Helper/ColorFunctions';
 import { amber, blue, deepOrange, green, purple, red, yellow } from '@mui/material/colors';
 import PaintingCreateUpdate from './PaintingCreateUpdate';
 import { baseURL } from '../../../API/api';
+import { paintingRatingAPI } from '../../../API/paintingRatingAPI';
+import PaintingRatingCard from '../PaintingRating/PaintingRatingCard';
+import PaintingRatingCreate from '../PaintingRating/PaintingRatingCreate';
+import PaintingRatingUpdate from '../PaintingRating/PaintingRatingUpdate';
 
 const Painting = () => {
     const dispatch = useDispatch();
@@ -16,19 +20,55 @@ const Painting = () => {
     const params = useParams();
     const myProfileId = useSelector((store) => store.user.profileId);
     const myPainterId = useSelector((store) => store.user.painterId);
+    const myRoles = useSelector((store) => store.user.roles);
+    const myIsAdmin = myRoles !== null ? myRoles.includes("Admin") : false;
 
     const [paintingInfo, setPaintingInfo] = React.useState(null);
-    const [exhibitions, setExhibitions] = React.useState([]);
     const [currentTab, setCurrentTab] = React.useState(0);
     const [menuAnchor, setMenuAnchor] = React.useState(null);
     const [selectedPainting, setSelectedPainting] = React.useState(params.paintingId);
     const [isCreateUpdateDialogOpen, setIsCreateUpdateDialogOpen] = React.useState(false);
     const [needRefetch, setNeedRefetch] = React.useState(Date.now());
 
+    const [ratings, setRatings] = React.useState(null);
+    const [totalRatingsCount, setTotalRatingsCount] = React.useState(0);
+    const [pageRatings, setPageRatings] = React.useState(1);
+    const ratingsPerPage = 12;
+    const [myRating, setMyRating] = React.useState(null);
+    const [isCreateRatingDialogOpen, setIsCreateRatingDialogOpen] = React.useState(false);
+    const [isUpdateRatingDialogOpen, setIsUpdateRatingDialogOpen] = React.useState(false);
+    const [selectedRating, setSelectedRating] = React.useState(false);
+    const [needRatingsRefetch, setNeedRatingsRefetch] = React.useState(Date.now());
+
+    const [exhibitions, setExhibitions] = React.useState(null);
+    const [totalExhibitionsCount, setTotalExhibitionsCount] = React.useState(0);
+    const [pageExhibitions, setPageExhibitions] = React.useState(1);
+    const exhibitionsPerPage = 12;
+    const [needExhibitionsRefetch, setNeedExhibitionsRefetch] = React.useState(Date.now());
+
+    const [contests, setContests] = React.useState(null);
+    const [totalContestsCount, setTotalContestsCount] = React.useState(0);
+    const [pageContests, setPageContests] = React.useState(1);
+    const contestsPerPage = 12;
+    const [needContestsRefetch, setNeedContestsRefetch] = React.useState(Date.now());
+
     React.useEffect(() => {
         dispatch(setTitle({ title: "Картина" }));
         fetchInfo();
-    }, [needRefetch]);
+    }, [needRefetch, myProfileId, myPainterId, myIsAdmin, needRatingsRefetch, needExhibitionsRefetch, needContestsRefetch]);
+
+    React.useEffect(() => {
+        if (ratings !== null) fetchRatings();
+        if (myProfileId !== null && ratings !== null) fetchMyRating();
+    }, [needRatingsRefetch, pageRatings]);
+
+    React.useEffect(() => {
+        if (exhibitions !== null) fetchExhibitions();
+    }, [needExhibitionsRefetch, pageExhibitions]);
+
+    React.useEffect(() => {
+        if (contests !== null) fetchContests();
+    }, [needContestsRefetch, pageContests]);
 
     const fetchInfo = async () => {
         dispatch(setLoading({ isLoading: true }));
@@ -38,31 +78,79 @@ const Painting = () => {
             dispatch(setLoading({ isLoading: false }));
         } else {
             dispatch(setLoading({ isLoading: false }));
-            dispatch(showAlert({ message: "Не вдалось отримати дані: " + result.message, severity: 'error', hideTime: 10000 }));
+            dispatch(showAlert({ message: "Не вдалось отримати дані про картину: " + result.message, severity: 'error', hideTime: 10000 }));
         }
     };
 
     if (paintingInfo == null) return <></>
 
-    const fetchExhibitions = async () => {
-        /*dispatch(setLoading({ isLoading: true }));
-        const result = await exhibitionsAPI.exhibitions({ page: 1, rowsPerPage: 2 });
+    const fetchRatings = async () => {
+        dispatch(setLoading({ isLoading: true }));
+        const result = await paintingRatingAPI.paintingRatings(params.paintingId, pageRatings, ratingsPerPage);
         if (result.successfully === true) {
-            setExhibitions(result.data.pageContent);
+            setRatings(result.data.pageContent);
+            setTotalRatingsCount(result.data.totalCount);
             dispatch(setLoading({ isLoading: false }));
         } else {
             dispatch(setLoading({ isLoading: false }));
-            dispatch(showAlert({ message: "Не вдалось отримати дані: " + result.message, severity: 'error', hideTime: 10000 }));
+            dispatch(showAlert({ message: "Не вдалось отримати оцінки: " + result.message, severity: 'error', hideTime: 10000 }));
+        }
+    };
+
+    const fetchMyRating = async () => {
+        dispatch(setLoading({ isLoading: true }));
+        const result = await paintingRatingAPI.myPaintingRating(params.paintingId);
+        if (result.successfully === true) {
+            setMyRating(result.data);
+            dispatch(setLoading({ isLoading: false }));
+        } else {
+            dispatch(setLoading({ isLoading: false }));
+            dispatch(showAlert({ message: "Не вдалось отримати власну оцінку: " + result.message, severity: 'error', hideTime: 10000 }));
+        }
+    };
+
+    const fetchExhibitions = async () => {
+        /*dispatch(setLoading({ isLoading: true }));
+        const result = await paintingRatingAPI.paintingRatings(params.paintingId, pageRatings, ratingsPerPage);
+        if (result.successfully === true) {
+            setRatings(result.data.pageContent);
+            setTotalRatingsCount(result.data.totalCount);
+            dispatch(setLoading({ isLoading: false }));
+        } else {
+            dispatch(setLoading({ isLoading: false }));
+            dispatch(showAlert({ message: "Не вдалось отримати список виставок: " + result.message, severity: 'error', hideTime: 10000 }));
         }*/
-        console.log("Fetching exhibitions");
+        console.log("Exhibitions fetch");
+    };
+
+    const fetchContests = async () => {
+        /*dispatch(setLoading({ isLoading: true }));
+        const result = await paintingRatingAPI.paintingRatings(params.paintingId, pageRatings, ratingsPerPage);
+        if (result.successfully === true) {
+            setRatings(result.data.pageContent);
+            setTotalRatingsCount(result.data.totalCount);
+            dispatch(setLoading({ isLoading: false }));
+        } else {
+            dispatch(setLoading({ isLoading: false }));
+            dispatch(showAlert({ message: "Не вдалось отримати список конкурсів: " + result.message, severity: 'error', hideTime: 10000 }));
+        }*/
+        console.log("Contests fetch");
     };
 
     const handleChangeTab = (_, newValue) => {
         switch (newValue) {
             case 1:
-                if (exhibitions.length === 0) fetchExhibitions();
+                if (ratings === null) {
+                    fetchRatings();
+                    if (myProfileId !== null) fetchMyRating();
+                }
                 break;
-
+            case 2:
+                if (exhibitions === null) fetchExhibitions();
+                break;
+            case 3:
+                if (contests === null) fetchContests();
+                break;
         }
         setCurrentTab(newValue);
     };
@@ -79,6 +167,11 @@ const Painting = () => {
         setIsCreateUpdateDialogOpen(true);
         handleMenuClose();
     };
+
+    const handleUpdateRating = (rating) => {
+        setSelectedRating(rating);
+        setIsUpdateRatingDialogOpen(true);
+    }
 
     const handleDeletePainting = async (paintingId) => {
         const deletePainting = async (paintingId) => {
@@ -149,8 +242,11 @@ const Painting = () => {
             open={Boolean(menuAnchor)}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleEditPainting}> <Icon>edit</Icon> Змінити</MenuItem>
-            <MenuItem onClick={() => handleDeletePainting(paintingInfo.paintingId)}> <Icon>delete</Icon> Видалити</MenuItem>
+            {(myIsAdmin || myPainterId !== null) ? ([
+                <MenuItem key="delete" onClick={() => handleDeletePainting(paintingInfo.paintingId)}> <Icon>delete</Icon> Видалити</MenuItem>,
+                myPainterId === paintingInfo.painterId &&
+                <MenuItem key="edit" onClick={handleEditPainting}> <Icon>edit</Icon> Змінити</MenuItem>
+            ]) : <Typography>Немає дозволених вам дій</Typography>}
         </Menu>
     );
 
@@ -288,16 +384,86 @@ const Painting = () => {
         </Box>
     );
 
-    const renderExhibitionsTab = (
-        exhibitions.length !== 0 ? (
+    const renderRatingsTab = (
+        ratings !== null ? (
             <>
-                <div>Yes exhibitions</div>
+                {myProfileId !== null &&
+                    <Accordion>
+                        <AccordionSummary
+                            expandIcon={<Icon>expand_more</Icon>}
+                            id="user_rating"
+                        >
+                            Залишений відгук
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            {myRating !== null ? (
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12}>
+                                        <PaintingRatingCard rating={myRating} setPage={setPageRatings} setNeedRefetch={setNeedRatingsRefetch} handleUpdateRating={handleUpdateRating} />
+                                    </Grid>
+                                </Grid>
+                            ) : (
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                    <Typography>
+                                        Ви ще не оцінили цю картину. Ви можете додати свій відгук
+                                    </Typography>
+                                    <Button onClick={() => setIsCreateRatingDialogOpen(true)}>Додати відгук</Button>
+                                </div>)}
+                        </AccordionDetails>
+                    </Accordion>
+                }
+                <Accordion defaultExpanded>
+                    <AccordionSummary expandIcon={<Icon>expand_more</Icon>} id="ratings" > Відгуки про картину </AccordionSummary>
+                    <AccordionDetails>
+                        {ratings.length !== 0 ? (
+                            <>
+                                <Grid container spacing={2}>
+                                    {ratings.map((rating, index) => (
+                                        <Grid item xs={12} key={index}>
+                                            <PaintingRatingCard rating={rating} setPage={setPageRatings}
+                                                setNeedRefetch={setNeedRatingsRefetch} handleUpdateRating={handleUpdateRating} />
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                                <Grid container justifyContent="center" sx={{ mt: 2 }}>
+                                    <Pagination
+                                        component="div"
+                                        count={Math.ceil(totalRatingsCount / ratingsPerPage)}
+                                        page={pageRatings}
+                                        onChange={(_, newPage) => setPageRatings(newPage)}
+                                    />
+                                </Grid>
+                            </>
+                        ) : (<Typography>Ще немає жодного відгуку</Typography>)}
+                    </AccordionDetails>
+                </Accordion>
+            </>
+        ) : (<CircularProgress />)
+    );
+
+    const renderExhibitionsTab = (
+        exhibitions !== null ? (
+            <>
+                <div>Є виставки</div>
                 {exhibitions.map((exhibition, index) => (
                     <div key={index}>{exhibition.exhibitionId}</div>
                 ))}
             </>
         ) : (
-            <div>No exhibitions</div>
+            <div>Немає виставок</div>
+        )
+    );
+
+    const renderContestsTab = (
+        contests !== null ? (
+            <>
+                <div>Є конкурси</div>
+                {contests.map((contest, index) => (
+                    <div key={index}>{contest.contestId}</div>
+                ))}
+            </>
+        ) : (
+            <div>Немає конкурсів</div>
         )
     );
 
@@ -344,14 +510,22 @@ const Painting = () => {
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                         <Tabs value={currentTab} onChange={handleChangeTab}>
                             <Tab label="Інформація" id={"tab-0"} aria-controls={"tabpanel-0"} />
-                            <Tab label="Виставки" id={"tab-1"} aria-controls={"tabpanel-1"} />
+                            <Tab label="Оцінки" id={"tab-1"} aria-controls={"tabpanel-1"} />
+                            <Tab label="Виставки" id={"tab-2"} aria-controls={"tabpanel-2"} />
+                            <Tab label="Конкурси" id={"tab-3"} aria-controls={"tabpanel-3"} />
                         </Tabs>
                     </Box>
                     <TabPanel value={currentTab} index={0}>
                         {renderInfoTab}
                     </TabPanel>
                     <TabPanel value={currentTab} index={1}>
+                        {renderRatingsTab}
+                    </TabPanel>
+                    <TabPanel value={currentTab} index={2}>
                         {renderExhibitionsTab}
+                    </TabPanel>
+                    <TabPanel value={currentTab} index={3}>
+                        {renderContestsTab}
                     </TabPanel>
                 </Box>
             </div>
@@ -359,6 +533,14 @@ const Painting = () => {
                 <PaintingCreateUpdate isCreateUpdateDialogOpen={isCreateUpdateDialogOpen} selectedPainting={selectedPainting}
                     setSelectedPainting={setSelectedPainting} setIsCreateUpdateDialogOpen={setIsCreateUpdateDialogOpen}
                     setNeedRefetch={setNeedRefetch} />
+            }
+            {isCreateRatingDialogOpen &&
+                <PaintingRatingCreate isCreateDialogOpen={isCreateRatingDialogOpen} setIsCreateDialogOpen={setIsCreateRatingDialogOpen}
+                    setNeedRefetch={setNeedRatingsRefetch} profileId={myProfileId} paintingId={paintingInfo.paintingId} />
+            }
+            {isUpdateRatingDialogOpen &&
+                <PaintingRatingUpdate isUpdateDialogOpen={isUpdateRatingDialogOpen} setIsUpdateDialogOpen={setIsUpdateRatingDialogOpen}
+                    setNeedRefetch={setNeedRatingsRefetch} defaultValues={selectedRating} />
             }
         </>
     );
