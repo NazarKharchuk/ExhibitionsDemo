@@ -13,6 +13,7 @@ import { paintingRatingAPI } from '../../../API/paintingRatingAPI';
 import PaintingRatingCard from '../PaintingRating/PaintingRatingCard';
 import PaintingRatingCreate from '../PaintingRating/PaintingRatingCreate';
 import PaintingRatingUpdate from '../PaintingRating/PaintingRatingUpdate';
+import StatisticsTab from '../../UI/StatisticsTab';
 
 const Painting = () => {
     const dispatch = useDispatch();
@@ -145,10 +146,10 @@ const Painting = () => {
                     if (myProfileId !== null) fetchMyRating();
                 }
                 break;
-            case 2:
+            case 3:
                 if (exhibitions === null) fetchExhibitions();
                 break;
-            case 3:
+            case 4:
                 if (contests === null) fetchContests();
                 break;
         }
@@ -441,6 +442,11 @@ const Painting = () => {
         ) : (<CircularProgress />)
     );
 
+    const renderStatisticsTab = (
+        <StatisticsTab currentTab={currentTab} index={2} valueId="paintingId" getLikes={paintingAPI.getLikesStatistic}
+            getRatings={paintingAPI.getRatingsStatistic}></StatisticsTab>
+    );
+
     const renderExhibitionsTab = (
         exhibitions !== null ? (
             <>
@@ -511,8 +517,9 @@ const Painting = () => {
                         <Tabs value={currentTab} onChange={handleChangeTab}>
                             <Tab label="Інформація" id={"tab-0"} aria-controls={"tabpanel-0"} />
                             <Tab label="Оцінки" id={"tab-1"} aria-controls={"tabpanel-1"} />
-                            <Tab label="Виставки" id={"tab-2"} aria-controls={"tabpanel-2"} />
-                            <Tab label="Конкурси" id={"tab-3"} aria-controls={"tabpanel-3"} />
+                            <Tab label="Статистика" id={"tab-2"} aria-controls={"tabpanel-2"} />
+                            <Tab label="Виставки" id={"tab-3"} aria-controls={"tabpanel-3"} />
+                            <Tab label="Конкурси" id={"tab-4"} aria-controls={"tabpanel-4"} />
                         </Tabs>
                     </Box>
                     <TabPanel value={currentTab} index={0}>
@@ -522,9 +529,12 @@ const Painting = () => {
                         {renderRatingsTab}
                     </TabPanel>
                     <TabPanel value={currentTab} index={2}>
-                        {renderExhibitionsTab}
+                        {renderStatisticsTab}
                     </TabPanel>
                     <TabPanel value={currentTab} index={3}>
+                        {renderExhibitionsTab}
+                    </TabPanel>
+                    <TabPanel value={currentTab} index={4}>
                         {renderContestsTab}
                     </TabPanel>
                 </Box>

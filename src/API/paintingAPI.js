@@ -117,4 +117,14 @@ export const paintingAPI = {
         const res = await instance.delete(`paintings/${paintingId}/tags/${tagId}`, {});
         return res.data;
     },
+    async getLikesStatistic(paintingId, statisticSettings) {
+        const params = { PeriodStart: statisticSettings.periodStart, PeriodSize: statisticSettings.periodSize };
+        const res = await instance.get(`paintings/${paintingId}/likes_statistic`, { params: params });
+        return res.data;
+    },
+    async getRatingsStatistic(paintingId, statisticSettings) {
+        const params = { PeriodStart: statisticSettings.periodStart, PeriodSize: statisticSettings.periodSize };
+        const res = await instance.get(`paintings/${paintingId}/ratings_statistic`, { params: params });
+        return res.data;
+    },
 };

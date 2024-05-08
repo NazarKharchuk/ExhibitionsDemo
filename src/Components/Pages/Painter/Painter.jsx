@@ -9,6 +9,7 @@ import { getColorFromSentence } from '../../../Helper/ColorFunctions';
 import { amber, blue, green, purple, red, yellow } from '@mui/material/colors';
 import PainterUpdate from './PainterUpdate';
 import { RefreshTokens } from '../../../Helper/RefreshTokens';
+import StatisticsTab from '../../UI/StatisticsTab';
 
 const Painter = () => {
     const dispatch = useDispatch();
@@ -200,6 +201,11 @@ const Painter = () => {
         </Box>
     );
 
+    const renderStatisticsTab = (
+        <StatisticsTab currentTab={currentTab} index={2} valueId="painterId" getLikes={painterAPI.getLikesStatistic}
+            getRatings={painterAPI.getRatingsStatistic}></StatisticsTab>
+    );
+
     const renderPaintingsTab = (
         paintings.length !== 0 ? (
             <>
@@ -245,6 +251,7 @@ const Painter = () => {
                         <Tabs value={currentTab} onChange={handleChangeTab}>
                             <Tab label="Інформація" id={"tab-0"} aria-controls={"tabpanel-0"} />
                             <Tab label="Картини" id={"tab-1"} aria-controls={"tabpanel-1"} />
+                            <Tab label="Статистика" id={"tab-2"} aria-controls={"tabpanel-2"} />
                         </Tabs>
                     </Box>
                     <TabPanel value={currentTab} index={0}>
@@ -252,6 +259,9 @@ const Painter = () => {
                     </TabPanel>
                     <TabPanel value={currentTab} index={1}>
                         {renderPaintingsTab}
+                    </TabPanel>
+                    <TabPanel value={currentTab} index={2}>
+                        {renderStatisticsTab}
                     </TabPanel>
                 </Box>
             </div>

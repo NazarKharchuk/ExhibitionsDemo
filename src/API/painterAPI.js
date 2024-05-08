@@ -30,4 +30,14 @@ export const painterAPI = {
         const res = await instance.delete(`painters/` + id, {});
         return res.data;
     },
+    async getLikesStatistic(painterId, statisticSettings) {
+        const params = { PeriodStart: statisticSettings.periodStart, PeriodSize: statisticSettings.periodSize };
+        const res = await instance.get(`painters/${painterId}/likes_statistic`, { params: params });
+        return res.data;
+    },
+    async getRatingsStatistic(painterId, statisticSettings) {
+        const params = { PeriodStart: statisticSettings.periodStart, PeriodSize: statisticSettings.periodSize };
+        const res = await instance.get(`painters/${painterId}/ratings_statistic`, { params: params });
+        return res.data;
+    },
 };
