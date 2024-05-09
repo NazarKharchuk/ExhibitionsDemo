@@ -1,9 +1,21 @@
 import { instance } from "./api";
 
 export const paintingAPI = {
-    async paintings(PageNumber = 1, PageSize = 12, painterId) {
-        const params = { PageNumber: PageNumber, PageSize: PageSize, painterId: painterId !== undefined ? painterId : null };
-        const res = await instance.get(`paintings`, { params: params });
+    async paintings(PageNumber = 1, PageSize = 12, filters) {
+        const { painterId, tagsIds, genresIds, stylesIds, materialsIds, sortBy, sortOrder } = filters;
+        const params = {
+            PageNumber: PageNumber,
+            PageSize: PageSize,
+            PainterId: painterId !== undefined ? painterId : null,
+            SortBy: sortBy !== undefined ? sortBy : null,
+            SortOrder: sortOrder !== undefined ? sortOrder : null,
+        };
+        let queryString = '';
+        if (tagsIds !== undefined) queryString = tagsIds.map(id => `TagsIds=${id}`).join('&');
+        if (genresIds !== undefined) queryString = genresIds.map(id => `GenresIds=${id}`).join('&');
+        if (stylesIds !== undefined) queryString = stylesIds.map(id => `StylesIds=${id}`).join('&');
+        if (materialsIds !== undefined) queryString = materialsIds.map(id => `MaterialsIds=${id}`).join('&');
+        const res = await instance.get(`paintings?${queryString}`, { params: params });
         return res.data;
     },
     async painting(id) {

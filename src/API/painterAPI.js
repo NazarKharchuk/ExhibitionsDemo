@@ -1,8 +1,14 @@
 import { instance } from "./api";
 
 export const painterAPI = {
-    async painters(PageNumber = 1, PageSize = 12) {
-        const params = { PageNumber: PageNumber, PageSize: PageSize };
+    async painters(PageNumber = 1, PageSize = 12, filters) {
+        const { sortBy, sortOrder } = filters;
+        const params = {
+            PageNumber: PageNumber,
+            PageSize: PageSize,
+            SortBy: sortBy !== undefined ? sortBy : null,
+            SortOrder: sortOrder !== undefined ? sortOrder : null,
+        };
         const res = await instance.get(`painters`, { params: params });
         return res.data;
     },
@@ -14,7 +20,7 @@ export const painterAPI = {
         const res = await instance.post(`painters`, {
             description: data.description,
             pseudonym: data.pseudonym,
-            profileId:  parseInt(data.profileId),
+            profileId: parseInt(data.profileId),
         });
         return res.data;
     },

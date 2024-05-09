@@ -1,9 +1,20 @@
 import { instance } from "./api";
 
 export const contestAPI = {
-    async contests(PageNumber = 1, PageSize = 12) {
-        const params = { PageNumber: PageNumber, PageSize: PageSize };
-        const res = await instance.get(`contests`, { params: params });
+    async contests(PageNumber = 1, PageSize = 12, filters) {
+        const { paintingId, tagsIds, needConfirmation, status, sortBy, sortOrder } = filters;
+        const params = {
+            PageNumber: PageNumber,
+            PageSize: PageSize,
+            PaintingId: paintingId !== undefined ? paintingId : null,
+            NeedConfirmation: needConfirmation !== undefined ? needConfirmation : null,
+            Status: status !== undefined ? status : null,
+            SortBy: sortBy !== undefined ? sortBy : null,
+            SortOrder: sortOrder !== undefined ? sortOrder : null,
+        };
+        let queryString = '';
+        if (tagsIds !== undefined) queryString = tagsIds.map(id => `TagsIds=${id}`).join('&');
+        const res = await instance.get(`contests?${queryString}`, { params: params });
         return res.data;
     },
     async contest(id) {

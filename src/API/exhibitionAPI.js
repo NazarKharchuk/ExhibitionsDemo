@@ -1,9 +1,19 @@
 import { instance } from "./api";
 
 export const exhibitionAPI = {
-    async exhibitions(PageNumber = 1, PageSize = 12) {
-        const params = { PageNumber: PageNumber, PageSize: PageSize };
-        const res = await instance.get(`exhibitions`, { params: params });
+    async exhibitions(PageNumber = 1, PageSize = 12, filters) {
+        const { paintingId, tagsIds, needConfirmation, sortBy, sortOrder } = filters;
+        const params = {
+            PageNumber: PageNumber,
+            PageSize: PageSize,
+            PaintingId: paintingId !== undefined ? paintingId : null,
+            NeedConfirmation: needConfirmation !== undefined ? needConfirmation : null,
+            SortBy: sortBy !== undefined ? sortBy : null,
+            SortOrder: sortOrder !== undefined ? sortOrder : null,
+        };
+        let queryString = '';
+        if (tagsIds !== undefined) queryString = tagsIds.map(id => `TagsIds=${id}`).join('&');
+        const res = await instance.get(`exhibitions?${queryString}`, { params: params });
         return res.data;
     },
     async exhibition(id) {
