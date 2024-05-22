@@ -8,6 +8,24 @@ import { useDispatch } from "react-redux";
 import { setLoading } from "./Store/headerSlice";
 import { userLogin } from "./Store/userSlice";
 import { instance } from "./API/api";
+import { ThemeProvider } from "@emotion/react";
+import { createTheme } from "@mui/material";
+
+const exhibitionsTheme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#0397ec',
+    },
+    secondary: {
+      main: '#5900ff',
+    },
+    background: {
+      default: '#dceeff',
+      paper: '#e1f2fe',
+    },
+  },
+});
 
 function App() {
   const dispatch = useDispatch();
@@ -49,11 +67,13 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className={s.App}>
-        <Header>
-          <Content />
-        </Header>
-      </div>
+      <ThemeProvider theme={exhibitionsTheme}>
+        <div className={s.App}>
+          <Header>
+            <Content />
+          </Header>
+        </div>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

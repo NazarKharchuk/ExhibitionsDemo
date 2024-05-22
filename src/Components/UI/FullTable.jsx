@@ -12,7 +12,7 @@ const FullTable = ({ tableTitle, addButtonName, handleAdd, columns, data, rowId,
     return (
         <Paper elevation={3} sx={{ width: "100%", overflow: "hidden" }}>
             <TableContainer sx={{ maxHeight: 530 }}>
-                <Table stickyHeader>
+                <Table stickyHeader sx={{ backgroundColor: 'background.paper' }}>
                     <TableHead>
                         <TableRow>
                             <TableCell colSpan={10}>

@@ -100,10 +100,12 @@ const PaintingCard = (props) => {
         handleMenuOpen: handleMenuOpen,
         handleMenuClose: handleMenuClose,
         menuItems: [
-            ...(myIsAdmin || myPainterId === painter.painterId) ? ([
-                myPainterId === painter.painterId && <MenuItem key="edit" onClick={() => { props.handleUpdatePainting(paintingId); handleMenuClose(); }}> <Icon>edit</Icon> Змінити</MenuItem>,
-                <MenuItem key="delete" onClick={handleDeletePainting}> <Icon>delete</Icon> Видалити</MenuItem>
-            ]) : [<Typography key="noActions">Немає дозволених вам дій</Typography>]
+            ...!(props.isWithoutMenu !== undefined && props.isWithoutMenu === true) ?
+                (myIsAdmin || myPainterId === painter.painterId) ? ([
+                    myPainterId === painter.painterId && <MenuItem key="edit" onClick={() => { props.handleUpdatePainting(paintingId); handleMenuClose(); }}> <Icon>edit</Icon> Змінити</MenuItem>,
+                    <MenuItem key="delete" onClick={handleDeletePainting}> <Icon>delete</Icon> Видалити</MenuItem>
+                ]) : [<Typography key="noActions">Немає дозволених вам дій</Typography>] :
+                [<Typography key="noActions">Немає дозволених вам дій</Typography>]
         ]
     };
 

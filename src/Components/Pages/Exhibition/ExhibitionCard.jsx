@@ -61,10 +61,12 @@ const ExhibitionCard = (props) => {
             open={Boolean(menuAnchor)}
             onClose={handleMenuClose}
         >
-            {props.isAdmin ? ([
-                <MenuItem key="edit" onClick={() => { props.handleUpdateExhibition(exhibitionId); handleMenuClose(); }}> <Icon>edit</Icon> Змінити</MenuItem>,
-                <MenuItem key="delete" onClick={handleDeleteExhibition}> <Icon>delete</Icon> Видалити</MenuItem>
-            ]) : <Typography>Немає дозволених вам дій</Typography>}
+            {!(props.isWithoutMenu !== undefined && props.isWithoutMenu === true) ? (
+                props.isAdmin ? ([
+                    <MenuItem key="edit" onClick={() => { props.handleUpdateExhibition(exhibitionId); handleMenuClose(); }}> <Icon>edit</Icon> Змінити</MenuItem>,
+                    <MenuItem key="delete" onClick={handleDeleteExhibition}> <Icon>delete</Icon> Видалити</MenuItem>
+                ]) : <Typography>Немає дозволених вам дій</Typography>
+            ) : <Typography>Немає дозволених вам дій</Typography>}
         </Menu>
     );
 

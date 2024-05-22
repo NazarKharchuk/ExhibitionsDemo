@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setLoading, setTitle, showAlert } from '../../../Store/headerSlice';
 import { useNavigate, useParams } from 'react-router-dom';
 import { paintingAPI } from '../../../API/paintingAPI';
+import { exhibitionAPI } from '../../../API/exhibitionAPI';
+import { contestAPI } from '../../../API/contestAPI';
 import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, Button, Card, CardHeader, CardMedia, Chip, CircularProgress, Grid, Icon, IconButton, LinearProgress, Menu, MenuItem, Pagination, Rating, Tab, Tabs, Tooltip, Typography } from '@mui/material';
 import TabPanel from '../../UI/TabPanel';
 import { getColorFromSentence } from '../../../Helper/ColorFunctions';
@@ -16,6 +18,8 @@ import PaintingRatingUpdate from '../PaintingRating/PaintingRatingUpdate';
 import StatisticsTab from '../../UI/StatisticsTab';
 import { paintingBuingAPI } from '../../../API/paintingBuingAPI';
 import { loadStripe } from '@stripe/stripe-js';
+import ExhibitionCard from '../Exhibition/ExhibitionCard';
+import ContestCard from '../Contest/ContestCard';
 
 const Painting = () => {
     const dispatch = useDispatch();
@@ -113,31 +117,27 @@ const Painting = () => {
     };
 
     const fetchExhibitions = async () => {
-        /*dispatch(setLoading({ isLoading: true }));
-        const result = await paintingRatingAPI.paintingRatings(params.paintingId, pageRatings, ratingsPerPage);
+        dispatch(setLoading({ isLoading: true }));
+        const result = await exhibitionAPI.exhibitions(pageExhibitions, exhibitionsPerPage, { paintingId: params.paintingId });
         if (result.successfully === true) {
-            setRatings(result.data.pageContent);
-            setTotalRatingsCount(result.data.totalCount);
-            dispatch(setLoading({ isLoading: false }));
+            setExhibitions(result.data.pageContent);
+            setTotalExhibitionsCount(result.data.totalCount);
         } else {
-            dispatch(setLoading({ isLoading: false }));
             dispatch(showAlert({ message: "Не вдалось отримати список виставок: " + result.message, severity: 'error', hideTime: 10000 }));
-        }*/
-        console.log("Exhibitions fetch");
+        }
+        dispatch(setLoading({ isLoading: false }));
     };
 
     const fetchContests = async () => {
-        /*dispatch(setLoading({ isLoading: true }));
-        const result = await paintingRatingAPI.paintingRatings(params.paintingId, pageRatings, ratingsPerPage);
+        dispatch(setLoading({ isLoading: true }));
+        const result = await contestAPI.contests(pageContests, contestsPerPage, { paintingId: params.paintingId });
         if (result.successfully === true) {
-            setRatings(result.data.pageContent);
-            setTotalRatingsCount(result.data.totalCount);
-            dispatch(setLoading({ isLoading: false }));
+            setContests(result.data.pageContent);
+            setTotalContestsCount(result.data.totalCount);
         } else {
-            dispatch(setLoading({ isLoading: false }));
             dispatch(showAlert({ message: "Не вдалось отримати список конкурсів: " + result.message, severity: 'error', hideTime: 10000 }));
-        }*/
-        console.log("Contests fetch");
+        }
+        dispatch(setLoading({ isLoading: false }));
     };
 
     const handleChangeTab = (_, newValue) => {
@@ -280,7 +280,7 @@ const Painting = () => {
             {[
                 (myProfileId && paintingInfo.isSold !== null && paintingInfo.isSold === false && paintingInfo.painterId !== myPainterId) &&
                 <MenuItem key="buy" onClick={() => handleBuyPainting(paintingInfo.paintingId)}> <Icon>shopping_cart</Icon> Купити</MenuItem>,
-                ...(myIsAdmin || myPainterId !== null) ? ([
+                ...(myIsAdmin || myPainterId === paintingInfo.painterId) ? ([
                     myPainterId === paintingInfo.painterId && <MenuItem key="edit" onClick={handleEditPainting}> <Icon>edit</Icon> Змінити</MenuItem>,
                     <MenuItem key="delete" onClick={() => handleDeletePainting(paintingInfo.paintingId)}> <Icon>delete</Icon> Видалити</MenuItem>
                 ]) : [<Typography key="noActions">Немає дозволених вам дій</Typography>]
@@ -518,28 +518,52 @@ const Painting = () => {
     );
 
     const renderExhibitionsTab = (
-        exhibitions !== null ? (
+        exhibitions === null && <CircularProgress />,
+        exhibitions !== null && exhibitions.length !== 0 ? (
             <>
-                <div>Є виставки</div>
-                {exhibitions.map((exhibition, index) => (
-                    <div key={index}>{exhibition.exhibitionId}</div>
-                ))}
+                <Grid container spacing={2}>
+                    {exhibitions.map((exhibition, index) => (
+                        <Grid item xs={12} sm={12} md={6} lg={4} key={index}>
+                            <ExhibitionCard exhibition={exhibition} isWithoutMenu={true} />
+                        </Grid>
+                    ))}
+                </Grid>
+                <Grid container justifyContent="center" sx={{ mt: 2 }}>
+                    <Pagination
+                        component="div"
+                        count={Math.ceil(totalExhibitionsCount / exhibitionsPerPage)}
+                        page={pageExhibitions}
+                        onChange={(_, newPage) => setPageExhibitions(newPage)}
+                    />
+                </Grid>
             </>
         ) : (
-            <div>Немає виставок</div>
+            <div>Картина не була подана на жодну виставку</div>
         )
     );
 
     const renderContestsTab = (
-        contests !== null ? (
+        contests === null && <CircularProgress />,
+        contests !== null && contests.length !== 0 ? (
             <>
-                <div>Є конкурси</div>
-                {contests.map((contest, index) => (
-                    <div key={index}>{contest.contestId}</div>
-                ))}
+                <Grid container spacing={2}>
+                    {contests.map((contest, index) => (
+                        <Grid item xs={12} sm={12} md={6} lg={4} key={index}>
+                            <ContestCard contest={contest} isWithoutMenu={true} />
+                        </Grid>
+                    ))}
+                </Grid>
+                <Grid container justifyContent="center" sx={{ mt: 2 }}>
+                    <Pagination
+                        component="div"
+                        count={Math.ceil(totalContestsCount / contestsPerPage)}
+                        page={pageContests}
+                        onChange={(_, newPage) => setPageContests(newPage)}
+                    />
+                </Grid>
             </>
         ) : (
-            <div>Немає конкурсів</div>
+            <div>Картина не була подана на жоден конкурс</div>
         )
     );
 
@@ -561,7 +585,11 @@ const Painting = () => {
                             </IconButton>
                         }
                         title={paintingInfo.name}
-                        subheader={paintingInfo.painter.pseudonym}
+                        subheader={
+                            <span onClick={() => navigate(`/painters/${paintingInfo.painterId}`, { replace: true })}>
+                                {paintingInfo.painter.pseudonym}
+                            </span>
+                        }
                     />
                     <CardMedia
                         component="img"

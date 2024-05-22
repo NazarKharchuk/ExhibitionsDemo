@@ -69,10 +69,12 @@ const ContestCard = (props) => {
             open={Boolean(menuAnchor)}
             onClose={handleMenuClose}
         >
-            {props.isAdmin ? ([
-                <MenuItem key="edit" onClick={() => { props.handleUpdateContest(contestId); handleMenuClose(); }}> <Icon>edit</Icon> Змінити</MenuItem>,
-                <MenuItem key="delete" onClick={handleDeleteContest}> <Icon>delete</Icon> Видалити</MenuItem>
-            ]) : <Typography>Немає дозволених вам дій</Typography>}
+            {!(props.isWithoutMenu !== undefined && props.isWithoutMenu === true) ? (
+                props.isAdmin ? ([
+                    <MenuItem key="edit" onClick={() => { props.handleUpdateContest(contestId); handleMenuClose(); }}> <Icon>edit</Icon> Змінити</MenuItem>,
+                    <MenuItem key="delete" onClick={handleDeleteContest}> <Icon>delete</Icon> Видалити</MenuItem>
+                ]) : <Typography>Немає дозволених вам дій</Typography>
+            ) : <Typography>Немає дозволених вам дій</Typography>}
         </Menu>
     );
 

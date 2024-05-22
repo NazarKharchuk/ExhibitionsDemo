@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setLoading, setTitle, showAlert } from '../../../Store/headerSlice';
 import { useNavigate, useParams } from 'react-router-dom';
 import { painterAPI } from '../../../API/painterAPI';
-import { Avatar, Box, CardHeader, Icon, IconButton, Menu, MenuItem, Rating, Tab, Tabs, Typography } from '@mui/material';
+import { Avatar, Box, CardHeader, CircularProgress, Grid, Icon, IconButton, Menu, MenuItem, Pagination, Rating, Tab, Tabs, Typography } from '@mui/material';
 import TabPanel from '../../UI/TabPanel';
 import { getColorFromSentence } from '../../../Helper/ColorFunctions';
 import { amber, blue, green, purple, red, yellow } from '@mui/material/colors';
@@ -11,6 +11,7 @@ import PainterUpdate from './PainterUpdate';
 import { RefreshTokens } from '../../../Helper/RefreshTokens';
 import StatisticsTab from '../../UI/StatisticsTab';
 import { paintingAPI } from '../../../API/paintingAPI';
+import PaintingCard from '../Painting/PaintingCard';
 
 const Painter = () => {
     const dispatch = useDispatch();
@@ -21,7 +22,13 @@ const Painter = () => {
     const myIsAdmin = myRoles !== null ? myRoles.includes("Admin") : false;
 
     const [painterInfo, setPainterInfo] = React.useState(null);
-    const [paintings, setPaintings] = React.useState([]);
+
+    const [paintings, setPaintings] = React.useState(null);
+    const [paintingsPage, setPaintingsPage] = React.useState(1);
+    const paintingsPerPage = 12;
+    const [paintingsTotalCount, setPaintingsTotalCount] = React.useState(0);
+    const [needRefetchPaintings, setNeedRefetchPaintings] = React.useState(Date.now());
+
     const [currentTab, setCurrentTab] = React.useState(0);
     const [menuAnchor, setMenuAnchor] = React.useState(null);
     const [isUpdateDialogOpen, setIsUpdateDialogOpen] = React.useState(false);
@@ -30,7 +37,11 @@ const Painter = () => {
     React.useEffect(() => {
         dispatch(setTitle({ title: "Художник" }));
         fetchInfo();
-    }, [needRefetch]);
+    }, [needRefetch, needRefetchPaintings]);
+
+    React.useEffect(() => {
+        if (paintings !== null) fetchPaintings();
+    }, [needRefetchPaintings, paintingsPage]);
 
     const fetchInfo = async () => {
         dispatch(setLoading({ isLoading: true }));
@@ -48,20 +59,20 @@ const Painter = () => {
 
     const fetchPaintings = async () => {
         dispatch(setLoading({ isLoading: true }));
-        const result = await paintingAPI.paintings(1, 12, { painterId: params.painterId });
+        const result = await paintingAPI.paintings(paintingsPage, paintingsPerPage, { painterId: params.painterId });
         if (result.successfully === true) {
             setPaintings(result.data.pageContent);
-            dispatch(setLoading({ isLoading: false }));
+            setPaintingsTotalCount(result.data.totalCount);
         } else {
-            dispatch(setLoading({ isLoading: false }));
             dispatch(showAlert({ message: "Не вдалось отримати дані: " + result.message, severity: 'error', hideTime: 10000 }));
         }
+        dispatch(setLoading({ isLoading: false }));
     };
 
     const handleChangeTab = (_, newValue) => {
         switch (newValue) {
             case 1:
-                if (paintings.length === 0) fetchPaintings();
+                if (paintings === null) fetchPaintings();
                 break;
 
         }
@@ -212,15 +223,27 @@ const Painter = () => {
     );
 
     const renderPaintingsTab = (
-        paintings.length !== 0 ? (
+        paintings === null && <CircularProgress />,
+        paintings !== null && paintings.length !== 0 ? (
             <>
-                <div>Yes paintings</div>
-                {paintings.map((painting, index) => (
-                    <div key={index}>{painting.paintingId}</div>
-                ))}
+                <Grid container spacing={2}>
+                    {paintings.map((painting, index) => (
+                        <Grid item xs={12} sm={12} md={6} lg={4} key={index}>
+                            <PaintingCard painting={painting} setNeedRefetch={setNeedRefetchPaintings} isWithoutMenu={true} />
+                        </Grid>
+                    ))}
+                </Grid>
+                <Grid container justifyContent="center" sx={{ mt: 2 }}>
+                    <Pagination
+                        component="div"
+                        count={Math.ceil(paintingsTotalCount / paintingsPerPage)}
+                        page={paintingsPage}
+                        onChange={(_, newPage) => setPaintingsPage(newPage)}
+                    />
+                </Grid>
             </>
         ) : (
-            <div>No paintings</div>
+            <div>Немає жодної доступної картини</div>
         )
     );
 

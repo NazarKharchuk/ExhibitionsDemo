@@ -203,7 +203,7 @@ const ProfileList = () => {
         <Box sx={{ width: '100%' }}>
             <Collapse in={isInfoOpen} >
                 <Alert
-                    severity="info"
+                    variant="outlined" severity="info"
                     action={
                         <>
                             {myProfileId === null ? (
