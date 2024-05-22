@@ -12,7 +12,7 @@ const ProfileForm = ({ control, fieldsSettings }) => {
                         name="profileId"
                         control={control}
                         defaultValue={fieldsSettings.profileId.defaultValue}
-                        label="Ідентифікатор жанру"
+                        label="Ідентифікатор профіля"
                         fullWidth
                         disabled={fieldsSettings.profileId.disabled}
                     />

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setLoading, setTitle, showAlert } from '../../../Store/headerSlice';
 import { useNavigate, useParams } from 'react-router-dom';
 import { paintingAPI } from '../../../API/paintingAPI';
-import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, Button, Card, CardHeader, CardMedia, Chip, CircularProgress, Grid, Icon, IconButton, LinearProgress, Menu, MenuItem, Pagination, Rating, Tab, Tabs, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, Button, Card, CardHeader, CardMedia, Chip, CircularProgress, Grid, Icon, IconButton, LinearProgress, Menu, MenuItem, Pagination, Rating, Tab, Tabs, Tooltip, Typography } from '@mui/material';
 import TabPanel from '../../UI/TabPanel';
 import { getColorFromSentence } from '../../../Helper/ColorFunctions';
 import { amber, blue, deepOrange, green, purple, red, yellow } from '@mui/material/colors';
@@ -14,6 +14,8 @@ import PaintingRatingCard from '../PaintingRating/PaintingRatingCard';
 import PaintingRatingCreate from '../PaintingRating/PaintingRatingCreate';
 import PaintingRatingUpdate from '../PaintingRating/PaintingRatingUpdate';
 import StatisticsTab from '../../UI/StatisticsTab';
+import { paintingBuingAPI } from '../../../API/paintingBuingAPI';
+import { loadStripe } from '@stripe/stripe-js';
 
 const Painting = () => {
     const dispatch = useDispatch();
@@ -195,6 +197,38 @@ const Painting = () => {
         handleMenuClose();
     };
 
+    const handleBuyPainting = async (paintingId) => {
+        dispatch(setLoading({ isLoading: true }));
+        const buyPainting = async (paintingId) => {
+            try {
+                const res = await paintingBuingAPI.buyPainting(paintingId);
+
+                if (res.successfully === true) {
+                    var sessionId = res.data.sessionId;
+                    var stripePublishableKey = res.data.stripePublishableKey;
+
+                    const stripe = await loadStripe(stripePublishableKey);
+                    const { error } = await stripe.redirectToCheckout({
+                        sessionId: sessionId
+                    });
+
+                    if (error) {
+                        console.error("Помилка під час переходу до оплати:", error);
+                    } else {
+                        console.log("Оплата успішно завершена!");
+                    }
+                } else {
+                    dispatch(showAlert({ message: res.message, severity: 'error', hideTime: 6000 }));
+                }
+            } catch (error) {
+                console.error("Помилка під час купівлі картини:", error);
+            }
+        }
+        await buyPainting(paintingId);
+        handleMenuClose();
+        dispatch(setLoading({ isLoading: false }));
+    };
+
     const handleFavoriteClick = async () => {
         const addLike = async (paintingId, profileId) => {
             try {
@@ -243,11 +277,14 @@ const Painting = () => {
             open={Boolean(menuAnchor)}
             onClose={handleMenuClose}
         >
-            {(myIsAdmin || myPainterId !== null) ? ([
-                <MenuItem key="delete" onClick={() => handleDeletePainting(paintingInfo.paintingId)}> <Icon>delete</Icon> Видалити</MenuItem>,
-                myPainterId === paintingInfo.painterId &&
-                <MenuItem key="edit" onClick={handleEditPainting}> <Icon>edit</Icon> Змінити</MenuItem>
-            ]) : <Typography>Немає дозволених вам дій</Typography>}
+            {[
+                (myProfileId && paintingInfo.isSold !== null && paintingInfo.isSold === false && paintingInfo.painterId !== myPainterId) &&
+                <MenuItem key="buy" onClick={() => handleBuyPainting(paintingInfo.paintingId)}> <Icon>shopping_cart</Icon> Купити</MenuItem>,
+                ...(myIsAdmin || myPainterId !== null) ? ([
+                    myPainterId === paintingInfo.painterId && <MenuItem key="edit" onClick={handleEditPainting}> <Icon>edit</Icon> Змінити</MenuItem>,
+                    <MenuItem key="delete" onClick={() => handleDeletePainting(paintingInfo.paintingId)}> <Icon>delete</Icon> Видалити</MenuItem>
+                ]) : [<Typography key="noActions">Немає дозволених вам дій</Typography>]
+            ]}
         </Menu>
     );
 
@@ -321,6 +358,39 @@ const Painting = () => {
                 </Box>
                 <Typography variant="body1" color="primary">
                     {new Date(paintingInfo.cretionDate).toLocaleDateString()}
+                </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 2 }}>
+                    <Icon sx={{ color: purple[500] }}>location_on</Icon>
+                    <Typography variant="body2" color="text.secondary" sx={{ marginLeft: 1 }}>
+                        Місце розташування картини:
+                    </Typography>
+                </Box>
+                <Typography variant="body1" color="primary">
+                    {paintingInfo.location ? paintingInfo.location : "не вказано"}
+                </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 2 }}>
+                    <Icon sx={{ color: amber[500] }}>shopping_cart</Icon>
+                    <Typography variant="body2" color="text.secondary" sx={{ marginLeft: 1 }}>
+                        Продаж картини:
+                    </Typography>
+                </Box>
+                <Typography variant="body1" color="primary">
+                    {paintingInfo.isSold !== null ? paintingInfo.isSold === false ? "продається" : "продано" : "не продається"}
+                </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', marginRight: 2 }}>
+                    <Icon sx={{ color: yellow[500] }}>monetization_on</Icon>
+                    <Typography variant="body2" color="text.secondary" sx={{ marginLeft: 1 }}>
+                        Вартість картини:
+                    </Typography>
+                </Box>
+                <Typography variant="body1" color="primary">
+                    {paintingInfo.price ? paintingInfo.price + "$" : "не вказано"}
                 </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -509,6 +579,19 @@ const Painting = () => {
                 >
                     <Icon sx={{ color: paintingInfo.isLiked && red[500], fontSize: 50 }}>favorite</Icon>
                 </IconButton>
+                <div style={{ position: 'absolute', top: '5rem', left: '0.3rem', zIndex: 3 }}>
+                    {paintingInfo.isSold !== null && <Tooltip title={!paintingInfo.isSold ? `Ціна: ${paintingInfo.price}$` : ''} arrow>
+                        <Chip
+                            label={paintingInfo.isSold ? 'Продано' : 'Продається'}
+                            deleteIcon={(!paintingInfo.isSold && myProfileId) ? <Icon>shopping_cart</Icon> : <></>}
+                            onDelete={() => handleBuyPainting(paintingInfo.paintingId)}
+                            color={paintingInfo.isSold ? "success" : "info"}
+                            sx={{
+                                opacity: 0.9,
+                            }}
+                        />
+                    </Tooltip>}
+                </div>
             </Box>
             {renderMenu}
             <div>

@@ -141,6 +141,20 @@ const PaintingCreateUpdate = ({ isCreateUpdateDialogOpen, setIsCreateUpdateDialo
             defaultValue: data ? data.location ? data.location : "" : "Київ",
             disabled: false
         },
+        status: {
+            defaultValue: data ? data.isSold !== null ? data.isSold !== false ? "sold" : "sale" : "notSale" : "notSale",
+            disabled: data ? (data.isSold && data.isSold === true) ? true : false : false
+        },
+        price: {
+            defaultValue: data ? data.price ? data.price : "" : "",
+            disabled: data ? (data.isSold && data.isSold === true) ? true : false : false,
+            validation: {
+                validate: {
+                    isSale: (price, formValues) => !(price === "" && formValues.status === "sale") ||
+                        'Якщо картина продається, потрібно вказати її ціну'
+                }
+            }
+        },
         image: {
             defaultValue: "",
             disabled: false,
@@ -176,6 +190,7 @@ const PaintingCreateUpdate = ({ isCreateUpdateDialogOpen, setIsCreateUpdateDialo
         try {
             data.painterId = painterId;
             data.cretionDate = data.cretionDate.toISOString();
+            data.isSold = data.status !== "notSale" ? data.status === "sale" ? false : true : null;
             const res = await paintingAPI.createPainting(data);
 
             if (res.successfully === true) {
@@ -194,6 +209,7 @@ const PaintingCreateUpdate = ({ isCreateUpdateDialogOpen, setIsCreateUpdateDialo
     const handleUpdate = async (data) => {
         try {
             data.cretionDate = data.cretionDate.toISOString();
+            data.isSold = data.status !== "notSale" ? data.status === "sale" ? false : true : null;
             const res = await paintingAPI.updatePainting(data.paintingId, data);
 
             if (res.successfully === true) {

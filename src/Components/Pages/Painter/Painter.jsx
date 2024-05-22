@@ -10,12 +10,15 @@ import { amber, blue, green, purple, red, yellow } from '@mui/material/colors';
 import PainterUpdate from './PainterUpdate';
 import { RefreshTokens } from '../../../Helper/RefreshTokens';
 import StatisticsTab from '../../UI/StatisticsTab';
+import { paintingAPI } from '../../../API/paintingAPI';
 
 const Painter = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const params = useParams();
     const myPainterId = useSelector((store) => store.user.painterId);
+    const myRoles = useSelector((store) => store.user.roles);
+    const myIsAdmin = myRoles !== null ? myRoles.includes("Admin") : false;
 
     const [painterInfo, setPainterInfo] = React.useState(null);
     const [paintings, setPaintings] = React.useState([]);
@@ -45,7 +48,7 @@ const Painter = () => {
 
     const fetchPaintings = async () => {
         dispatch(setLoading({ isLoading: true }));
-        const result = await painterAPI.painters({ page: 1, rowsPerPage: 2 });
+        const result = await paintingAPI.paintings(1, 12, { painterId: params.painterId });
         if (result.successfully === true) {
             setPaintings(result.data.pageContent);
             dispatch(setLoading({ isLoading: false }));
@@ -110,8 +113,10 @@ const Painter = () => {
             open={Boolean(menuAnchor)}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleEditPainter}> <Icon>edit</Icon> Змінити</MenuItem>
-            <MenuItem onClick={() => handleDeletePainter(painterInfo.painterId)}> <Icon>delete</Icon> Видалити</MenuItem>
+            {(myIsAdmin || myPainterId === painterInfo.painterId) ? ([
+                myPainterId === painterInfo.painterId && <MenuItem key="edit" onClick={handleEditPainter}> <Icon>edit</Icon> Змінити</MenuItem>,
+                <MenuItem key="delete" onClick={() => handleDeletePainter(painterInfo.painterId)}> <Icon>delete</Icon> Видалити</MenuItem>,
+            ]) : <Typography>Немає дозволених вам дій</Typography>}
         </Menu>
     );
 
@@ -211,7 +216,7 @@ const Painter = () => {
             <>
                 <div>Yes paintings</div>
                 {paintings.map((painting, index) => (
-                    <div key={index}>{painting.painterId}</div>
+                    <div key={index}>{painting.paintingId}</div>
                 ))}
             </>
         ) : (

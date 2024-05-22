@@ -13,7 +13,10 @@ const PainterCard = (props) => {
     const { painterId, pseudonym, firstName, lastName, likesCount, victoriesCount, ratingCount, avgRating } = props.painter;
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const myProfileId = useSelector((store) => store.user.profileId);
     const myPainterId = useSelector((store) => store.user.painterId);
+    const myRoles = useSelector((store) => store.user.roles);
+    const myIsAdmin = myRoles !== null ? myRoles.includes("Admin") : false;
 
     const handleViewProfile = () => {
         navigate("/painters/" + painterId, { replace: true });
@@ -64,7 +67,9 @@ const PainterCard = (props) => {
             open={Boolean(menuAnchor)}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleDeletePainter}> <Icon>delete</Icon> Видалити</MenuItem>
+            {(myIsAdmin || myPainterId === painterId) ?
+                <MenuItem onClick={handleDeletePainter}> <Icon>delete</Icon> Видалити</MenuItem> :
+                <Typography>Немає дозволених вам дій</Typography>}
         </Menu>
     );
 

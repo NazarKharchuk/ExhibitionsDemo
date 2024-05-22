@@ -1,4 +1,4 @@
-import { IconButton, Button, MenuItem } from '@mui/material';
+import { IconButton, Button, MenuItem, Typography } from '@mui/material';
 import { Icon } from '@mui/material';
 import { red, } from '@mui/material/colors';
 import * as React from 'react';
@@ -16,6 +16,8 @@ const PaintingCard = (props) => {
     const dispatch = useDispatch();
     const myProfileId = useSelector((store) => store.user.profileId);
     const myPainterId = useSelector((store) => store.user.painterId);
+    const myRoles = useSelector((store) => store.user.roles);
+    const myIsAdmin = myRoles !== null ? myRoles.includes("Admin") : false;
 
     const handleViewPainting = () => {
         navigate("/paintings/" + paintingId, { replace: true });
@@ -98,8 +100,10 @@ const PaintingCard = (props) => {
         handleMenuOpen: handleMenuOpen,
         handleMenuClose: handleMenuClose,
         menuItems: [
-            <MenuItem key={1} onClick={() => { props.handleUpdatePainting(paintingId); handleMenuClose(); }}> <Icon>edit</Icon> Змінити</MenuItem>,
-            <MenuItem key={2} onClick={handleDeletePainting}> <Icon>delete</Icon> Видалити</MenuItem>
+            ...(myIsAdmin || myPainterId === painter.painterId) ? ([
+                myPainterId === painter.painterId && <MenuItem key="edit" onClick={() => { props.handleUpdatePainting(paintingId); handleMenuClose(); }}> <Icon>edit</Icon> Змінити</MenuItem>,
+                <MenuItem key="delete" onClick={handleDeletePainting}> <Icon>delete</Icon> Видалити</MenuItem>
+            ]) : [<Typography key="noActions">Немає дозволених вам дій</Typography>]
         ]
     };
 

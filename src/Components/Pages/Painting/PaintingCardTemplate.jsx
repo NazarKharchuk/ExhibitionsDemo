@@ -1,13 +1,13 @@
-import { Avatar, Card, CardContent, Typography, IconButton, CardHeader, CardActions, Button, Box, Rating, Menu, MenuItem, CardMedia } from '@mui/material';
+import { Avatar, Card, CardContent, Typography, IconButton, CardHeader, CardActions, Button, Box, Rating, Menu, MenuItem, CardMedia, Tooltip, Chip } from '@mui/material';
 import { Icon } from '@mui/material';
-import { red, yellow, amber, teal } from '@mui/material/colors';
+import { red, yellow, amber, teal, green } from '@mui/material/colors';
 import { getColorFromSentence } from "../../../Helper/ColorFunctions"
 import * as React from 'react';
 import { baseURL } from '../../../API/api';
 
 const PaintingCardTemplate = (props) => {
     const { paintingId, name, painter, likesCount, isLiked, ratingCount, avgRating,
-        contestVictoriesCount, width, height, imagePath, contentRest } = props.painting;
+        contestVictoriesCount, width, height, imagePath, isSold, price, contentRest } = props.painting;
 
     const { menuAnchor, handleMenuOpen, handleMenuClose, menuItems } = props.menu || {};
 
@@ -50,6 +50,18 @@ const PaintingCardTemplate = (props) => {
                 {(props.isWon !== undefined && props.isWon === true) &&
                     <Icon sx={{ color: yellow[500], fontSize: 100, position: 'absolute', zIndex: 2, right: '2rem', bottom: 0, transform: 'translateY(50%)', }}>emoji_events</Icon>
                 }
+                <div style={{ position: 'absolute', top: '0.3rem', left: '0.3rem', zIndex: 3 }}>
+                    {isSold !== null && <Tooltip title={!isSold ? `Ціна: ${price}$` : ''} arrow>
+                        <Chip
+                            label={isSold ? 'Продано' : 'Продається'}
+                            icon={<Icon>shopping_cart</Icon>}
+                            color={isSold ? "success" : "info"}
+                            sx={{
+                                opacity: 0.9,
+                            }}
+                        />
+                    </Tooltip>}
+                </div>
             </div>
             <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>

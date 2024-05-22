@@ -30,6 +30,15 @@ export const paintingLocationRules = {
     maxLength: { value: 100, message: 'Довжина опису локації картини не повинна перевищувати 100 символів' }
 };
 
+export const paintingBuyingStatusRules = {
+    required: { value: true, message: 'Статус продажу картини є обов\'язковим' },
+};
+
+export const paintingPriceRules = {
+    valueAsNumber: { value: true, message: 'Ціна картини має бути числовим значенням' },
+    min: { value: 0.01, message: 'Ціна картини повинна бути більшою за нуль' }
+};
+
 export const paintingImageRules = {
     required: { value: true, message: 'Зображення є обов\'язковим' },
 };

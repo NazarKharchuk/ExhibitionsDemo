@@ -3,12 +3,13 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoading, setTitle, showAlert } from '../../../Store/headerSlice';
 import { profileAPI } from '../../../API/profileAPI';
-import { TableCell, IconButton, Chip, Button, Box, Collapse, Alert } from '@mui/material';
+import { TableCell, IconButton, Chip, Button, Box, Collapse, Alert, Typography } from '@mui/material';
 import Icon from '@mui/material/Icon';
 import FullTable from '../../UI/FullTable';
 import { RefreshTokens } from '../../../Helper/RefreshTokens';
 import ProfileUpdate from './ProfileUpdate';
 import { useNavigate } from 'react-router-dom';
+import { userLogout } from '../../../Store/userSlice';
 
 const columns = [
     {
@@ -45,13 +46,15 @@ const columns = [
 const ProfileList = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const myProfileId = useSelector((store) => store.user.profileId);
+    const myRoles = useSelector((store) => store.user.roles);
+    const myIsAdmin = myRoles !== null ? myRoles.includes("Admin") : false;
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [data, setData] = useState([]);
     const [totalCount, setTotalCount] = useState(0);
     const [needRefetch, setNeedRefetch] = useState(Date.now());
-    const myProfileId = useSelector((store) => store.user.profileId);
     const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
     const [isInfoOpen, setIsInfoOpen] = React.useState(true);
 
@@ -60,8 +63,8 @@ const ProfileList = () => {
     }, []);
 
     useEffect(() => {
-        fetchData();
-    }, [page, rowsPerPage, needRefetch]);
+        if (myIsAdmin) fetchData();
+    }, [page, rowsPerPage, needRefetch, myProfileId]);
 
     const handleChangePage = (_, newPage) => {
         setPage(newPage);
@@ -97,9 +100,9 @@ const ProfileList = () => {
 
                 if (res.successfully === true) {
                     dispatch(showAlert({ message: "Профіль успішно видалено", severity: 'success', hideTime: 4000 }));
-                    if (myProfileId === profileId) RefreshTokens();
                     setPage(0);
                     setNeedRefetch(Date.now());
+                    if (myProfileId === profileId) dispatch(userLogout());
                 } else {
                     dispatch(showAlert({ message: res.message, severity: 'error', hideTime: 6000 }));
                 }
@@ -208,9 +211,14 @@ const ProfileList = () => {
                                     Зареєструватись
                                 </Button>
                             ) : (
-                                <Button onClick={handleEdit} color="inherit" size="small">
-                                    Змінити
-                                </Button>
+                                <>
+                                    <Button onClick={handleEdit} color="inherit" size="small">
+                                        Змінити
+                                    </Button>
+                                    <Button onClick={() => handleDelete(myProfileId)} color="inherit" size="small">
+                                        Видалити
+                                    </Button>
+                                </>
                             )}
                             <IconButton color="inherit" size="small" onClick={() => setIsInfoOpen(false)}>
                                 <Icon>close</Icon>
@@ -222,7 +230,7 @@ const ProfileList = () => {
                     {myProfileId === null ? (
                         "Ще не маєш облікового запису? Реєструйся!"
                     ) : (
-                        "Ви можете змінити інформацію у власному профілі"
+                        "Ви можете змінити або видалити власний профіль користувача"
                     )}
                 </Alert>
             </Collapse>
@@ -232,23 +240,25 @@ const ProfileList = () => {
     return (
         <>
             {renderInfoAlert}
-            <FullTable tableTitle="Таблиця профілів" addButtonName={null} columns={columns} data={data} rowId="profileId"
-                totalCount={totalCount} rowsPerPage={rowsPerPage} page={page} handleChangePage={handleChangePage}
-                handleChangeRowsPerPage={handleChangeRowsPerPage} additionalCols={additionalCols}>
-                {(row) => (
-                    <>
-                        <TableCell key="roles">
-                            {renderRoles(row)}
-                        </TableCell>
-                        <TableCell key="actions">
-                            <IconButton onClick={() => handleDelete(row.profileId)}>
-                                <Icon>delete</Icon>
-                            </IconButton>
-                        </TableCell>
-                    </>
-                )}
-            </FullTable>
-            {isUpdateDialogOpen &&
+            {myIsAdmin ? (
+                <FullTable tableTitle="Таблиця профілів" addButtonName={null} columns={columns} data={data} rowId="profileId"
+                    totalCount={totalCount} rowsPerPage={rowsPerPage} page={page} handleChangePage={handleChangePage}
+                    handleChangeRowsPerPage={handleChangeRowsPerPage} additionalCols={additionalCols}>
+                    {(row) => (
+                        <>
+                            <TableCell key="roles">
+                                {renderRoles(row)}
+                            </TableCell>
+                            <TableCell key="actions">
+                                <IconButton onClick={() => handleDelete(row.profileId)}>
+                                    <Icon>delete</Icon>
+                                </IconButton>
+                            </TableCell>
+                        </>
+                    )}
+                </FullTable>
+            ) : <Typography>Ви не можете переглянути список профілів усіх користувачів</Typography>}
+            {(isUpdateDialogOpen && myProfileId !== null) &&
                 <ProfileUpdate isUpdateDialogOpen={isUpdateDialogOpen} setIsUpdateDialogOpen={setIsUpdateDialogOpen}
                     setNeedRefetch={setNeedRefetch} />
             }

@@ -31,6 +31,8 @@ export const paintingAPI = {
         formData.append('height', data.height);
         formData.append('location', data.location);
         formData.append('painterId', data.painterId);
+        if (data.isSold !== null) formData.append('isSold', data.isSold);
+        formData.append('price', data.price);
         formData.append('image', data.image[0]);
 
         const res = await instance.post(`paintings`, formData, {
@@ -50,6 +52,8 @@ export const paintingAPI = {
         formData.append('width', data.width);
         formData.append('height', data.height);
         formData.append('location', data.location);
+        if (data.isSold !== null) formData.append('isSold', data.isSold);
+        formData.append('price', data.price);
         if (data.length !== 0) formData.append('image', data.image[0]);
 
         const res = await instance.put(`paintings/${id}`, formData, {
@@ -64,8 +68,8 @@ export const paintingAPI = {
         const res = await instance.delete(`paintings/` + id, {});
         return res.data;
     },
-    async addLike(paintingId, profileId) {
-        const res = await instance.post(`paintings/${paintingId}/likes`, parseInt(profileId),
+    async addLike(paintingId) {
+        const res = await instance.post(`paintings/${paintingId}/likes`, {},
             {
                 headers: {
                     'Content-Type': 'application/json'
@@ -73,8 +77,8 @@ export const paintingAPI = {
             });
         return res.data;
     },
-    async deleteLike(paintingId, profileId) {
-        const res = await instance.delete(`paintings/${paintingId}/likes/${profileId}`, {});
+    async deleteLike(paintingId) {
+        const res = await instance.delete(`paintings/${paintingId}/likes`, {});
         return res.data;
     },
     async addGenre(paintingId, genreId) {

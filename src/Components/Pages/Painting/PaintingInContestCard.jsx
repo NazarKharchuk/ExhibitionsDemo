@@ -17,6 +17,8 @@ const PaintingInContestCard = (props) => {
     const dispatch = useDispatch();
     const myProfileId = useSelector((store) => store.user.profileId);
     const myPainterId = useSelector((store) => store.user.painterId);
+    const myRoles = useSelector((store) => store.user.roles);
+    const myIsAdmin = myRoles !== null ? myRoles.includes("Admin") : false;
 
     const handleViewPainting = () => {
         navigate("/paintings/" + paintingId, { replace: true });
@@ -164,7 +166,9 @@ const PaintingInContestCard = (props) => {
         handleMenuOpen: handleMenuOpen,
         handleMenuClose: handleMenuClose,
         menuItems: [
-            <MenuItem key={2} onClick={() => handleDeleteApplication(applicationId)}> <Icon>delete</Icon> Видалити заявку</MenuItem>
+            (myProfileId && (myIsAdmin || painting.painterId == myPainterId)) ?
+                <MenuItem key="delete" onClick={() => handleDeleteApplication(applicationId)}> <Icon>delete</Icon> Видалити заявку</MenuItem> :
+                <Typography key="noActions">Немає дозволених вам дій</Typography>
         ]
     };
 

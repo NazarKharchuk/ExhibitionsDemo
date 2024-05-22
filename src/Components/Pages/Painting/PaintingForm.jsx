@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { paintingCretionDateRules, paintingDescriptionRules, paintingHeightRules, paintingLocationRules, paintingNameRules, paintingWidthRules } from '../../../Helper/Validation/Painting/PaintingValidation';
+import { paintingBuyingStatusRules, paintingCretionDateRules, paintingDescriptionRules, paintingHeightRules, paintingLocationRules, paintingNameRules, paintingPriceRules, paintingWidthRules } from '../../../Helper/Validation/Painting/PaintingValidation';
 import { Grid } from '@mui/material';
 import FormTextField from '../../FormElements/FormTextField';
 import FormFileField from '../../FormElements/FormFileField';
 import FormDateField from '../../FormElements/FormDateField';
+import FormRadioGroup from '../../FormElements/FormRadioGroup';
 
 const PaintingForm = ({ control, fieldsSettings }) => {
     const formKey = JSON.stringify(fieldsSettings);
@@ -89,6 +90,37 @@ const PaintingForm = ({ control, fieldsSettings }) => {
                         fullWidth
                         multiline
                         disabled={fieldsSettings.location.disabled}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <FormRadioGroup
+                        name="status"
+                        control={control}
+                        rules={paintingBuyingStatusRules}
+                        defaultValue={fieldsSettings.status.defaultValue}
+                        options={[
+                            { value: 'notSale', label: 'Не продається' },
+                            { value: 'sale', label: 'Продається' },
+                            { value: 'sold', label: 'Продано' },
+                        ]}
+                        row
+                        label="Статус продажу картини"
+                        disabled={fieldsSettings.status.disabled}
+                    />
+                </Grid>
+                <Grid item xs={6}>
+                    <FormTextField
+                        name="price"
+                        control={control}
+                        rules={{
+                            ...paintingPriceRules,
+                            ...fieldsSettings.price.validation
+                        }}
+                        defaultValue={fieldsSettings.price.defaultValue}
+                        label="Ціна картини (USD)"
+                        fullWidth
+                        type="number"
+                        disabled={fieldsSettings.price.disabled}
                     />
                 </Grid>
                 <Grid item xs={12}>

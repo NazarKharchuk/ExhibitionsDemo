@@ -23,7 +23,7 @@ const ApplicationCreate = ({ isCreateDialogOpen, setIsCreateDialogOpen, setNeedR
 
     const fetchData = async () => {
         setIsLoading(true);
-        const result = await paintingAPI.paintings(page, rowsPerPage, myPainterId);
+        const result = await paintingAPI.paintings(page, rowsPerPage, { painterId: myPainterId });
         if (result.successfully === true) {
             setData(result.data.pageContent);
             setTotalCount(result.data.totalCount);

@@ -17,6 +17,7 @@ import Contest from "../Pages/Contest/Contest";
 import ContestList from "../Pages/Contest/ContestList";
 import Exhibition from "../Pages/Exhibition/Exhibition";
 import ExhibitionList from "../Pages/Exhibition/ExhibitionList";
+import SuccessfulPurchase from "../Pages/PaintingBuying/SuccessfulPurchase";
 
 const Content = () => {
     return (
@@ -38,6 +39,7 @@ const Content = () => {
                 <Route path="/contests" element={<ContestList />} />
                 <Route path="/exhibitions/:exhibitionId" element={<Exhibition />} />
                 <Route path="/exhibitions" element={<ExhibitionList />} />
+                <Route path="/payment/success" element={<SuccessfulPurchase />} />
                 <Route path="*" element={<Navigate to="/home" replace />} />
             </Routes>
         </Container>
