@@ -1,7 +1,7 @@
 import axios from "axios";
 import { RefreshTokens } from "../Helper/RefreshTokens";
 
-export const baseURL = "https://localhost:44350";
+export const baseURL = "https://exhibitionswebservice.azurewebsites.net/"; //"https://localhost:44350";
 
 export const instance = axios.create({
     withCredentials: true,

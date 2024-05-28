@@ -15,7 +15,7 @@ const FullTable = ({ tableTitle, addButtonName, handleAdd, columns, data, rowId,
                 <Table stickyHeader sx={{ backgroundColor: 'background.paper' }}>
                     <TableHead>
                         <TableRow>
-                            <TableCell colSpan={10}>
+                            <TableCell colSpan={10} sx={{ backgroundColor: 'background.paper' }}>
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                     <Typography variant="h4">{tableTitle}</Typography>
                                     {(addButtonName && myIsAdmin) &&
@@ -28,7 +28,7 @@ const FullTable = ({ tableTitle, addButtonName, handleAdd, columns, data, rowId,
                         </TableRow>
                         <TableRow>
                             {columns.map((column) => (
-                                <TableCell key={column.id} style={{ top: 60, minWidth: column.minWidth }}>
+                                <TableCell key={column.id} style={{ top: 60, minWidth: column.minWidth }} sx={{ backgroundColor: 'background.paper' }}>
                                     {column.label}
                                 </TableCell>
                             ))}
@@ -36,7 +36,7 @@ const FullTable = ({ tableTitle, addButtonName, handleAdd, columns, data, rowId,
                                 additionalCols
                             ) : (
                                 myIsAdmin &&
-                                <TableCell key="actions" style={{ top: 60 }}>
+                                <TableCell key="actions" style={{ top: 60 }} sx={{ backgroundColor: 'background.paper' }}>
                                     Дії
                                 </TableCell>
                             )}

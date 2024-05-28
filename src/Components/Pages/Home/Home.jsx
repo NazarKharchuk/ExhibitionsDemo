@@ -18,7 +18,7 @@ const Home = () => {
     const [paintings, setPaintings] = React.useState(null);
 
     const fetchPaintings = async () => {
-        const result = await paintingAPI.paintings(1, 6, { sortBy: "CretionDate", sortOrder: "asc" });
+        const result = await paintingAPI.paintings(1, 6, { sortBy: "CretionDate", sortOrder: "desc" });
         if (result.successfully === true) {
             setPaintings(result.data.pageContent);
         }
